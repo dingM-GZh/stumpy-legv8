@@ -85,6 +85,97 @@ def disassemble():
             arg3Str.append(", R" + str(arg2[i]))
             instrSpaced.append(binToSpacedR(instr))
 
+        elif(str(bin(1160))[2:] or str( bin( 1161 ) )[ 2: ] in instr ):
+            opcodeStr.append( "ADDI" )
+            arg1.append((int(instr, base=2) & rnMask) >> 5) # arg1 is R2?
+            arg2.append((int(instr, base=2) & rnMask) >> 10) # arg2 is immediate amnt?
+            arg3.append((int(instr, base=2) & rnMask) >> 0) # arg3 is R1?
+
+            # append the output
+
+        elif( str( bin( 1672 ) )[ 2: ] or str( bin( 1673 ) )[ 2: ] in instr ):
+            opcodeStr.append( "SUBI" )
+            arg1.append((int(instr, base=2) & rnMask) >> 5)  # arg1 is R2?
+            arg2.append((int(instr, base=2) & rnMask) >> 10)  # arg2 is immediate amnt?
+            arg3.append((int(instr, base=2) & rnMask) >> 0)  # arg3 is R1?
+
+            # append the output
+
+        elif( str( bin( 1104 ) )[ 2: ] in instr ):
+            opcodeStr.append( "AND" ) # R TYPE INSTRUCTION
+            arg1.append((int(instr, base=2) & rnMask) >> 5)
+            arg2.append((int(instr, base=2) & rnMask) >> 16)
+            arg3.append((int(instr, base=2) & rnMask) >> 0)
+            arg1Str.append("\tR" + str(arg3[i]))
+            arg2Str.append(", R" + str(arg1[i]))
+            arg3Str.append(", R" + str(arg2[i]))
+            instrSpaced.append(binToSpacedR(instr))
+
+        elif( str( bin( 1360 ) )[ 2: ] in instr ):
+            opcodeStr.append( "ORR" ) # R TYPE INSTRUCTION
+            arg1.append((int(instr, base=2) & rnMask) >> 5)
+            arg2.append((int(instr, base=2) & rnMask) >> 16)
+            arg3.append((int(instr, base=2) & rnMask) >> 0)
+            arg1Str.append("\tR" + str(arg3[i]))
+            arg2Str.append(", R" + str(arg1[i]))
+            arg3Str.append(", R" + str(arg2[i]))
+            instrSpaced.append(binToSpacedR(instr))
+
+        elif( str( bin( 1872 ) )[ 2: ] in instr ):
+            opcodeStr.append( "EOR" ) # R TYPE INSTRUCTION
+            arg1.append((int(instr, base=2) & rnMask) >> 5)
+            arg2.append((int(instr, base=2) & rnMask) >> 16)
+            arg3.append((int(instr, base=2) & rnMask) >> 0)
+            arg1Str.append("\tR" + str(arg3[i]))
+            arg2Str.append(", R" + str(arg1[i]))
+            arg3Str.append(", R" + str(arg2[i]))
+            instrSpaced.append(binToSpacedR(instr))
+
+        elif( str( bin( 1690 ) )[ 2: ] in instr ):
+            opcodeStr.append( "LSR" ) # R TYPE INSTRUCTION
+            # not sure which is arg1, arg2, and arg3
+            arg1.append((int(instr, base=2) & rnMask) >> 5) # arg1 is R1?
+            arg2.append((int(instr, base=2) & rnMask) >> 10) # arg2 is shamt?
+            arg3.append((int(instr, base=2) & rnMask) >> 16) # arg3 is R0?
+
+            # append the output
+
+        elif( str( bin( 1691 ) )[ 2: ] in instr ):
+            opcodeStr.append( "LSL" ) # R TYPE INSTRUCTION
+            # not sure which is arg1, arg2, and arg3
+            arg1.append((int(instr, base=2) & rnMask) >> 5)  # arg1 is R1?
+            arg2.append((int(instr, base=2) & rnMask) >> 10)  # arg2 is shamt?
+            arg3.append((int(instr, base=2) & rnMask) >> 16)  # arg3 is R0?
+
+            # append the output
+
+        elif( str( bin( 1984) )[ 2: ] in instr ):
+            opcodeStr.append( "STUR" )
+            arg1.append((int(instr, base=2) & rnMask) >> 0) # R1
+            arg2.append((int(instr, base=2) & rnMask) >> 5) # R2
+            arg3.append((int(instr, base=2) & rnMask) >> 12) # address
+
+            # append the output
+
+        elif( str( bin( 1986 ) )[ 2: ] in instr ):
+            opcodeStr.append( "LDUR" )
+            arg1.append((int(instr, base=2) & rnMask) >> 0)  # R1
+            arg2.append((int(instr, base=2) & rnMask) >> 5)  # R2
+            arg3.append((int(instr, base=2) & rnMask) >> 12)  # address
+
+            # append the output
+
+        elif( str( bin( 0000 ) )[ 2: ] in instr ):
+            opcodeStr.append( "NOP" )
+
+        elif( str( bin( 2038 ) )[ 2: ] in instr):
+            opcodeStr.append( "BREAK" )
+            # something about masking with 0x1FFFFF
+
+
+        # add B, CBZ, CNBZ, MOVZ, MOVK
+
+
 def formatOutput():
     with open(output + "_dis.txt", 'w') as fout:
         i = 0
