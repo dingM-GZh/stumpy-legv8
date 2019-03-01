@@ -186,27 +186,64 @@ def disassemble():
         elif( str( bin( 160 ) )[ 2: ] in instr ): # need to include opcode range
             opcodeStr.append( "B" )
             arg1.append((int(instr, base=2) & rnMask) >> 0)
-            arg1Str.append("\t#" + str(arg1[i])
+            arg1Str.append("\t#" + str(arg1[i]))
+            instrSpaced.append(binToSpacedR(instr))
             
-        elif( str( bin( 1440 ) )[ 2: ] in instr ): # need to include opcode range
-            opcopdeStr.append( "CBZ" )
+        elif( str( bin( 1440 ) )[ 2: ] or
+              str( bin( 1441 ) )[ 2: ] or
+              str( bin( 1442 ) )[ 2: ] or
+              str( bin( 1443 ) )[ 2: ] or
+              str( bin( 1444 ) )[ 2: ] or
+              str( bin( 1445 ) )[ 2: ] or
+              str( bin( 1446 ) )[ 2: ] or
+              str( bin( 1447 ) )[ 2: ] in instr ):
+            opcodeStr.append( "CBZ" )
             arg1.append((int(instr, base=2) & rnMask) >> 5)
             arg2.append((int(instr, base=2) & rnMask) >> 0)
             arg1Str.append("\tR" + str(arg2[i]))
             arg2Str.append(", #" + str(arg1[i]))
+            instrSpaced.append(binToSpacedR(instr))
             
-        elif( str( bin( 1448 ) )[ 2: ] in instr ): # need to include opcode range
+        elif( str( bin( 1448 ) )[ 2: ] or
+              str( bin( 1449 ) )[ 2: ] or
+              str( bin( 1450 ) )[ 2: ] or
+              str( bin( 1451 ) )[ 2: ] or
+              str( bin( 1452 ) )[ 2: ] or
+              str( bin( 1453 ) )[ 2: ] or
+              str( bin( 1454 ) )[ 2: ] or
+              str( bin( 1445 ) )[ 2: ] in instr ):
             opcodeStr.append( "CBNZ" )
             arg1.append((int(instr, base=2) & rnMask) >> 5)
             arg2.append((int(instr, base=2) & rnMask) >> 0)
             arg1Str.append("\tR" + str(arg2[i]))
             arg2Str.append(", #" + str(arg1[i]))
+            instrSpaced.append(binToSpacedR(instr))
 
-        '''''
-        elif
-        '''''
+        elif( str( bin( 1684 ) )[ 2: ] or
+              str( bin( 1685 ) )[ 2: ] or
+              str( bin( 1686 ) )[ 2: ] or
+              str( bin( 1687 ) )[ 2: ] in instr ):
+            opcodeStr.append( "MOVZ" )
+            arg1.append((int(instr, base=2) & rnMask) >> 5)
+            arg2.append((int(instr, base=2) & rnMask) >> 21)
+            arg3.append((int(instr, base=2) & rnMask) >> 0)
+            arg1Str.append("\tR" + str(arg3[i]))
+            arg2Str.append(", " + str(arg1[i]))
+            arg3Str.append(", LSL " + str(arg2[i]))
+            instrSpaced.append(binToSpacedR(instr))
 
-        # add B, CBZ, CNBZ, MOVZ, MOVK
+        elif( str( bin( 1940 ) )[ 2: ] or
+              str( bin( 1941 ) )[ 2: ] or
+              str( bin( 1942 ) )[ 2: ] or
+              str( bin( 1943 ) )[ 2: ] in instr ):
+            opcodeStr.append("MOVK")
+            arg1.append((int(instr, base=2) & rnMask) >> 5)
+            arg2.append((int(instr, base=2) & rnMask) >> 21)
+            arg3.append((int(instr, base=2) & rnMask) >> 0)
+            arg1Str.append("\tR" + str(arg3[i]))
+            arg2Str.append(", " + str(arg1[i]))
+            arg3Str.append(", LSL " + str(arg2[i]))
+            instrSpaced.append(binToSpacedR(instr))
 
 
 def formatOutput():
