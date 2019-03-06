@@ -2,31 +2,20 @@ import sys
 import os
 import fileinput
 
-global opcodeStr
-global arg1
-global arg2
-global arg3
-global arg1Str
-global arg2Str
-global arg3Str
-global mem
-global binMem
-global opcode
-
-arg1 = [] # <type 'list'>: [0, 0, 0, 0, 0, 1, 1, 10, 10, 0, 3, 4, 152, 4, 10, 1, 0, 112, 0]
-arg2 = [] # <type 'list'>: [0, 1, 1, 0, 1, 0, 10, 3, 4, 5, 0, 5, 0, 5, 6, 1, 1, 0, 0]
-arg3 = [] # <type 'list'>: [0, 10, 264, 0, 264, 48, 2, 172, 216, 260, 8, 6, 0, 6, 172, -1, 264, 0, 0]
-arg1Str = [] # <type 'list'>: ['', '\tR1', '\tR1', '', '\tR1', '\tR1', '\tR10', '\tR3', '\tR4', .....]
-arg2Str = [] # <type 'list'>: ['', ', R0', ', 264', '', ', 264', ', #48', ', R1', ', 172', ', 216', ...]'
-arg3Str = [] # <type 'list'>: ['', ', #10', '(R0)', '', '(R0)', '', ', #2', '(R10)', '(R10)', '(R0)',...]
-mem = [] # <type 'list'>: [-1, -2, -3, 1, 2, 3, 0, 0, 5, -5, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0]
-binMem = [] # <type 'list'>: ['11111111111111111111111111111111', '11111111111111111111111111111110', ...] opcode = []
+arg1 = []  # <type 'list'>: [0, 0, 0, 0, 0, 1, 1, 10, 10, 0, 3, 4, 152, 4, 10, 1, 0, 112, 0]
+arg2 = []  # <type 'list'>: [0, 1, 1, 0, 1, 0, 10, 3, 4, 5, 0, 5, 0, 5, 6, 1, 1, 0, 0]
+arg3 = []  # <type 'list'>: [0, 10, 264, 0, 264, 48, 2, 172, 216, 260, 8, 6, 0, 6, 172, -1, 264, 0, 0]
+arg1Str = []  # <type 'list'>: ['', '\tR1', '\tR1', '', '\tR1', '\tR1', '\tR10', '\tR3', '\tR4', .....]
+arg2Str = []  # <type 'list'>: ['', ', R0', ', 264', '', ', 264', ', #48', ', R1', ', 172', ', 216', ...]'
+arg3Str = []  # <type 'list'>: ['', ', #10', '(R0)', '', '(R0)', '', ', #2', '(R10)', '(R10)', '(R0)',...]
+mem = []  # <type 'list'>: [-1, -2, -3, 1, 2, 3, 0, 0, 5, -5, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0]
+binMem = []  # <type 'list'>: ['11111111111111111111111111111111', '11111111111111111111111111111110', ...] opcode = []
 opcode = []
 opcodeStr = []
 instructions = []
 instrSpaced = []
 
-#masks
+# masks
 rnMask = 0x3e0  # 1st argument ARM Rn
 rmMask = 0x1F0000  # second argument ARM Rm
 rdMask = 0x1F  # destination ARM Rd
@@ -37,19 +26,32 @@ addr2Mask = 0xFFFFE0  # addr for CB format
 imsftMask = 0x600000  # shift for IM formatw
 imdataMask = 0x1FFFE0  # data for IM type
 
-#input/output file paths
+# input/output file paths
 input = "input"
 output = "output"
 
+
 class Disassembler:
 
-    #def_init_(self):
+    global opcodeStr
+    global arg1
+    global arg2
+    global arg3
+    global arg1Str
+    global arg2Str
+    global arg3Str
+    global mem
+    global binMem
+    global opcode
+
+    # def_init_(self):
     def run(self):
         setup()
         disassemble()
         formatOutput()
 
-#gets the arguments and read in input -> stores input in instructions
+
+# gets the arguments and read in input -> stores input in instructions
 def setup():
     # get file names
     for i in range(len(sys.argv)):
@@ -65,228 +67,232 @@ def setup():
 
 def disassemble():
     i = 0
+    j = -1
+    z = -1
+
     for instr in instructions:
-        if (str(bin(1112))[2:] in instr): #if opcode = 1112 -> ADD
+
+        j += 1
+        z += 1
+        mem.append(str(96 + (j * 4))) # memory location
+        opcode.append(int(instr, base=2) >> 21)
+
+        if( opcode[z] == 1112 ):  # if opcode = 1112 -> ADD
             opcodeStr.append("ADD")
             arg1.append((int(instr, base=2) & rnMask) >> 5)
-            arg2.append((int(instr, base=2) & rnMask) >> 16)
-            arg3.append((int(instr, base=2) & rnMask) >> 0)
+            arg2.append((int(instr, base=2) & rmMask) >> 16)
+            arg3.append((int(instr, base=2) & rdMask) >> 0)
             arg1Str.append("\tR" + str(arg3[i]))
             arg2Str.append(", R" + str(arg1[i]))
             arg3Str.append(", R" + str(arg2[i]))
             instrSpaced.append(binToSpacedR(instr))
-        elif (str(bin(1624))[2:] in instr):
+
+        elif( opcode[z] == 1624 ): # SUB = 1624
             opcodeStr.append("SUB")
             arg1.append((int(instr, base=2) & rnMask) >> 5)
-            arg2.append((int(instr, base=2) & rnMask) >> 16)
-            arg3.append((int(instr, base=2) & rnMask) >> 0)
+            arg2.append((int(instr, base=2) & rmMask) >> 16)
+            arg3.append((int(instr, base=2) & rdMask) >> 0)
             arg1Str.append("\tR" + str(arg3[i]))
             arg2Str.append(", R" + str(arg1[i]))
             arg3Str.append(", R" + str(arg2[i]))
             instrSpaced.append(binToSpacedR(instr))
 
-        elif( str( bin( 1160 ) )[ 2: ] or str( bin( 1161 ) )[ 2: ] in instr ):
-            opcodeStr.append( "ADDI" )
-            arg1.append((int(instr, base=2) & rnMask) >> 5) # arg1 is R2
-            arg2.append((int(instr, base=2) & rnMask) >> 10) # arg2 is shamt
-            arg3.append((int(instr, base=2) & rnMask) >> 0) # arg3 is R1
-            arg1Str.append("\tR" + str(arg3[i]))
-            arg2Str.append(", R" + str(arg1[i]))
-            arg3Str.append(", R" + str(arg2[i]))
-            instrSpaced.append(binToSpacedR(instr))
-
-        elif( str( bin( 1672 ) )[ 2: ] or str( bin( 1673 ) )[ 2: ] in instr ):
-            opcodeStr.append( "SUBI" )
-            arg1.append((int(instr, base=2) & rnMask) >> 5)  # arg1 is R2
-            arg2.append((int(instr, base=2) & rnMask) >> 10)  # arg2 is shamt
-            arg3.append((int(instr, base=2) & rnMask) >> 0)  # arg3 is R1
-            arg1Str.append("\tR" + str(arg3[i]))
-            arg2Str.append(", R" + str(arg1[i]))
-            arg3Str.append(", R" + str(arg2[i]))
-            instrSpaced.append(binToSpacedR(instr))
-
-        elif( str( bin( 1104 ) )[ 2: ] in instr ):
-            opcodeStr.append( "AND" ) # R TYPE INSTRUCTION
+        elif( opcode[z] >= 1160 and opcode[z] <= 1161 ): # ADDI => 1160 - 1161
+            opcodeStr.append("ADDI")
             arg1.append((int(instr, base=2) & rnMask) >> 5)
-            arg2.append((int(instr, base=2) & rnMask) >> 16)
-            arg3.append((int(instr, base=2) & rnMask) >> 0)
+            arg2.append((int(instr, base=2) & rmMask) >> 10)
+            arg3.append((int(instr, base=2) & rdMask) >> 0)
             arg1Str.append("\tR" + str(arg3[i]))
             arg2Str.append(", R" + str(arg1[i]))
             arg3Str.append(", R" + str(arg2[i]))
-            instrSpaced.append(binToSpacedR(instr))
+            instrSpaced.append(binToSpacedI(instr))
 
-        elif( str( bin( 1360 ) )[ 2: ] in instr ):
-            opcodeStr.append( "ORR" ) # R TYPE INSTRUCTION
+        elif( opcode[z] >= 1672 and opcode[z] <= 1673 ): # SUBI => 1672 - 1673
+            opcodeStr.append("SUBI")
             arg1.append((int(instr, base=2) & rnMask) >> 5)
-            arg2.append((int(instr, base=2) & rnMask) >> 16)
-            arg3.append((int(instr, base=2) & rnMask) >> 0)
+            arg2.append((int(instr, base=2) & rmMask) >> 10)
+            arg3.append((int(instr, base=2) & rdMask) >> 0)
             arg1Str.append("\tR" + str(arg3[i]))
             arg2Str.append(", R" + str(arg1[i]))
             arg3Str.append(", R" + str(arg2[i]))
-            instrSpaced.append(binToSpacedR(instr))
+            instrSpaced.append(binToSpacedI(instr))
 
-        elif( str( bin( 1872 ) )[ 2: ] in instr ):
-            opcodeStr.append( "EOR" ) # R TYPE INSTRUCTION
+        elif( opcode[z] == 1104 ): # AND => 1104
+            opcodeStr.append("AND")  # R TYPE INSTRUCTION
             arg1.append((int(instr, base=2) & rnMask) >> 5)
-            arg2.append((int(instr, base=2) & rnMask) >> 16)
-            arg3.append((int(instr, base=2) & rnMask) >> 0)
+            arg2.append((int(instr, base=2) & rmMask) >> 16)
+            arg3.append((int(instr, base=2) & rdMask) >> 0)
             arg1Str.append("\tR" + str(arg3[i]))
             arg2Str.append(", R" + str(arg1[i]))
             arg3Str.append(", R" + str(arg2[i]))
             instrSpaced.append(binToSpacedR(instr))
 
-        elif( str( bin( 1690 ) )[ 2: ] in instr ):
-            opcodeStr.append( "LSR" ) # R TYPE INSTRUCTION
-            arg1.append((int(instr, base=2) & rnMask) >> 5) # arg1 is R1
-            arg2.append((int(instr, base=2) & rnMask) >> 10) # arg2 is shamt
-            arg3.append((int(instr, base=2) & rnMask) >> 0) # arg3 is R0
+        elif( opcode[z] == 1360 ): # ORR => 1360
+            opcodeStr.append("ORR")  # R TYPE INSTRUCTION
+            arg1.append((int(instr, base=2) & rnMask) >> 5)
+            arg2.append((int(instr, base=2) & rmMask) >> 16)
+            arg3.append((int(instr, base=2) & rdMask) >> 0)
             arg1Str.append("\tR" + str(arg3[i]))
             arg2Str.append(", R" + str(arg1[i]))
-            arg3Str.append(", #" + str(arg2[i]))
+            arg3Str.append(", R" + str(arg2[i]))
             instrSpaced.append(binToSpacedR(instr))
 
-        elif( str( bin( 1691 ) )[ 2: ] in instr ):
-            opcodeStr.append( "LSL" ) # R TYPE INSTRUCTION
+        elif( opcode[z] == 1872 ): # EOR => 1872
+            opcodeStr.append("EOR")  # R TYPE INSTRUCTION
+            arg1.append((int(instr, base=2) & rnMask) >> 5)
+            arg2.append((int(instr, base=2) & rmMask) >> 16)
+            arg3.append((int(instr, base=2) & rdMask) >> 0)
+            arg1Str.append("\tR" + str(arg3[i]))
+            arg2Str.append(", R" + str(arg1[i]))
+            arg3Str.append(", R" + str(arg2[i]))
+            instrSpaced.append(binToSpacedR(instr))
+
+        elif( opcode[z] == 1690 ): # LSR => 1690
+            opcodeStr.append("LSR")  # R TYPE INSTRUCTION
             arg1.append((int(instr, base=2) & rnMask) >> 5)  # arg1 is R1
-            arg2.append((int(instr, base=2) & rnMask) >> 10)  # arg2 is shamt
-            arg3.append((int(instr, base=2) & rnMask) >> 0)  # arg3 is R0
+            arg2.append((int(instr, base=2) & rmMask) >> 10)  # arg2 is shamt
+            arg3.append((int(instr, base=2) & rdMask) >> 0)  # arg3 is R0
             arg1Str.append("\tR" + str(arg3[i]))
             arg2Str.append(", R" + str(arg1[i]))
             arg3Str.append(", #" + str(arg2[i]))
             instrSpaced.append(binToSpacedR(instr))
 
-        elif( str( bin( 1984 ) )[ 2: ] in instr ):
-            opcodeStr.append( "STUR" )
-            arg1.append((int(instr, base=2) & rnMask) >> 5) # R2
-            arg2.append((int(instr, base=2) & rnMask) >> 12) # address
-            arg3.append((int(instr, base=2) & rnMask) >> 0) # R0
+        elif( opcode[z] == 1691 ): # LSL => 1691
+            opcodeStr.append("LSL")  # R TYPE INSTRUCTION
+            arg1.append((int(instr, base=2) & rnMask) >> 5)  # arg1 is R1
+            arg2.append((int(instr, base=2) & rmMask) >> 10)  # arg2 is shamt
+            arg3.append((int(instr, base=2) & rdMask) >> 0)  # arg3 is R0
             arg1Str.append("\tR" + str(arg3[i]))
-            arg2Str.append(", [R" + str(arg1[i]))
-            arg3Str.append(", #" + str(arg2[i] + "]"))
+            arg2Str.append(", R" + str(arg1[i]))
+            arg3Str.append(", #" + str(arg2[i]))
             instrSpaced.append(binToSpacedR(instr))
 
-        elif( str( bin( 1986 ) )[ 2: ] in instr ):
-            opcodeStr.append( "LDUR" )
+        elif( opcode[z] == 1984 ): # STUR => 1984
+            opcodeStr.append("STUR")
+            arg1.append((int(instr, base=2) & rnMask) >> 5)  # R2
+            arg2.append((int(instr, base=2) & rmMask) >> 12)  # address
+            arg3.append((int(instr, base=2) & rdMask) >> 0)  # R0
+            arg1Str.append("\tR" + str(arg3[i]))
+            arg2Str.append(", [R" + str(arg1[i]))
+            arg3Str.append(", #" + str(binToDecimal(instr[12:20])) + "]")
+            instrSpaced.append(binToSpacedR(instr))
+
+        elif( opcode[z] == 1986 ): # LDUR => 1986
+            opcodeStr.append("LDUR")
             arg1.append((int(instr, base=2) & rnMask) >> 5)  # R1
-            arg2.append((int(instr, base=2) & rnMask) >> 12)  # R2
-            arg3.append((int(instr, base=2) & rnMask) >> 0)  # address
+            arg2.append((int(instr, base=2) & rmMask) >> 12)  # R2
+            arg3.append((int(instr, base=2) & rdMask) >> 0)  # address
             arg1Str.append("\tR" + str(arg3[i]))
             arg2Str.append(", [R" + str(arg1[i]))
-            arg3Str.append(", #" + str(arg2[i] + "]"))
+            arg3Str.append(", #" + str(binToDecimal(instr[12:20])) + "]")
             instrSpaced.append(binToSpacedR(instr))
 
-        elif( str( bin( 0000 ) )[ 2: ] in instr ):
-            opcodeStr.append( "NOP" )
 
-        elif( str( bin( 2038 ) )[ 2: ] in instr):
-            opcodeStr.append( "BREAK" )
+        elif( opcode[z] >= 160 and opcode[z] <= 191 ):  # B => 160 - 191
+            opcodeStr.append("B")
+            arg1Str.append("\t#" + str(binToDecimal(instr[6:32])))
+            arg2Str.append('')
+            arg3Str.append('')
+            instrSpaced.append(binToSpacedB(instr))
+
+        elif( opcode[z] >= 1440 and opcode[z] <= 1447 ):  # CBZ => 1440 - 1447
+            opcodeStr.append("CBZ")
+            arg1.append((int(instr, base=2) & addr2Mask) >> 5)
+            arg2.append((int(instr, base=2) & rnMask) >> 0)
+            arg1Str.append("\tR" + str(arg2[i]))
+            arg2Str.append(", #" + str(arg1[i]))
+            arg3Str.append('')
+            instrSpaced.append(binToSpacedCB(instr))
+
+        elif( opcode[z] >= 1448 and opcode[z] <= 1455 ):  # CBNZ => 1448 - 1455
+            opcodeStr.append("CBNZ")
+            arg1.append((int(instr, base=2) & addr2Mask) >> 5)
+            arg2.append((int(instr, base=2) & rnMask) >> 0)
+            arg1Str.append("\tR" + str(arg2[i]))
+            arg2Str.append(", #" + str(arg1[i]))
+            arg3Str.append('')
+            instrSpaced.append(binToSpacedCB(instr))
+
+        elif( opcode[z] == 2038 ): # BREAK => 2038
+            opcodeStr.append("\tBREAK")
+            arg1Str.append('')
+            arg2Str.append('')
+            arg3Str.append('')
+            instrSpaced.append(instr)
             # something about masking with 0x1FFFFF
 
-
-        elif( str( bin( 160 ) )[ 2: ] in instr ): # need to include opcode range
-            opcodeStr.append( "B" )
-            arg1.append((int(instr, base=2) & rnMask) >> 0)
-            arg1Str.append("\t#" + str(arg1[i]))
-            instrSpaced.append(binToSpacedR(instr))
-            
-        elif( str( bin( 1440 ) )[ 2: ] or
-              str( bin( 1441 ) )[ 2: ] or
-              str( bin( 1442 ) )[ 2: ] or
-              str( bin( 1443 ) )[ 2: ] or
-              str( bin( 1444 ) )[ 2: ] or
-              str( bin( 1445 ) )[ 2: ] or
-              str( bin( 1446 ) )[ 2: ] or
-              str( bin( 1447 ) )[ 2: ] in instr ):
-            opcodeStr.append( "CBZ" )
-            arg1.append((int(instr, base=2) & rnMask) >> 5)
-            arg2.append((int(instr, base=2) & rnMask) >> 0)
-            arg1Str.append("\tR" + str(arg2[i]))
-            arg2Str.append(", #" + str(arg1[i]))
-            instrSpaced.append(binToSpacedR(instr))
-            
-        elif( str( bin( 1448 ) )[ 2: ] or
-              str( bin( 1449 ) )[ 2: ] or
-              str( bin( 1450 ) )[ 2: ] or
-              str( bin( 1451 ) )[ 2: ] or
-              str( bin( 1452 ) )[ 2: ] or
-              str( bin( 1453 ) )[ 2: ] or
-              str( bin( 1454 ) )[ 2: ] or
-              str( bin( 1445 ) )[ 2: ] in instr ):
-            opcodeStr.append( "CBNZ" )
-            arg1.append((int(instr, base=2) & rnMask) >> 5)
-            arg2.append((int(instr, base=2) & rnMask) >> 0)
-            arg1Str.append("\tR" + str(arg2[i]))
-            arg2Str.append(", #" + str(arg1[i]))
-            instrSpaced.append(binToSpacedR(instr))
-
-        elif( str( bin( 1684 ) )[ 2: ] or
-              str( bin( 1685 ) )[ 2: ] or
-              str( bin( 1686 ) )[ 2: ] or
-              str( bin( 1687 ) )[ 2: ] in instr ):
-            opcodeStr.append( "MOVZ" )
-            arg1.append((int(instr, base=2) & rnMask) >> 5)
-            arg2.append((int(instr, base=2) & rnMask) >> 21)
-            arg3.append((int(instr, base=2) & rnMask) >> 0)
-            arg1Str.append("\tR" + str(arg3[i]))
-            arg2Str.append(", " + str(arg1[i]))
-            arg3Str.append(", LSL " + str(arg2[i]))
-            instrSpaced.append(binToSpacedR(instr))
-
-        elif( str( bin( 1940 ) )[ 2: ] or
-              str( bin( 1941 ) )[ 2: ] or
-              str( bin( 1942 ) )[ 2: ] or
-              str( bin( 1943 ) )[ 2: ] in instr ):
-            opcodeStr.append("MOVK")
-            arg1.append((int(instr, base=2) & rnMask) >> 5)
-            arg2.append((int(instr, base=2) & rnMask) >> 21)
-            arg3.append((int(instr, base=2) & rnMask) >> 0)
-            arg1Str.append("\tR" + str(arg3[i]))
-            arg2Str.append(", " + str(arg1[i]))
-            arg3Str.append(", LSL " + str(arg2[i]))
-            instrSpaced.append(binToSpacedR(instr))
+      #  else: convert binary number
+            #if negative
+                #2s comp negative to decimal
+            #else
+                #2s comp positive to decimal (already helper function written)
 
 
 def formatOutput():
-    with open(output + "_dis.txt", 'w') as fout:
+    with open(output + "_dis.txt", 'w') as myFile:
         i = 0
         for opcode in opcodeStr:
-            print instrSpaced[i] + " " + opcode + arg1Str[i] + arg2Str[i] + arg3Str[i]
+            writeData = instrSpaced[i] + "\t" + mem[i] + ' ' + opcode + arg1Str[i] + arg2Str[i] + arg3Str[i] + '\n'
+            print writeData
+            myFile.write(writeData)
             i += 1
+
 
 def binToSpacedR(s):
     spaced = s[0:11] + " " + s[11:16] + " " + s[16:22] + " " + s[22: 27]
     spaced += " " + s[27:32]
     return spaced
 
+
 def binToSpacedD(s):
     spaced = s[0:11] + " " + s[11:20] + " " + s[20:22] + " " + s[22:27]
     spaced += " " + s[27:32]
     return spaced
 
-def unsingedToTwos(bitString):
+def binToSpacedI(s):
+    spaced = s[0:11] + " " + s[11: 22] + " " + s[22:27] + " " + s[27:32]
+    return spaced
 
+def binToSpacedB(s):
+    return s[0:6] + " " + s[6:32]
+
+def binToSpacedCB(s):
+    return s[0:8] + " " + s[8:27] + " " + s[27: 32]
+
+def binToDecimal(s):
+
+    flipped = s[::-1]
+    value = 0
+    i = 0
+
+    for char in flipped:
+        if (char == '1'):
+            value += 2**i
+        i += 1
+
+
+
+    return value
+
+def unsingedToTwos(bitString):
     firstOne = False
     newBitString = ''
 
     for bit in bitString:
 
-        if not firstOne: #don't flip yet
+        if not firstOne:  # don't flip yet
             newBitString += bit
             if bit == '1':
                 firstOne = True
-        elif firstOne: #flip the bit
+        elif firstOne:  # flip the bit
             if bit == '0':
                 newBitString += '1'
             elif bit == '1':
                 newBitString += '0'
-       # print "bit string now = " + newBitString
+    # print "bit string now = " + newBitString
 
     return newBitString
 
-def bitStringToArm (bits):
-    mem.append(bits)
-
-if __name__=="__main__":
-
+if __name__ == "__main__":
     dis = Disassembler()
     dis.run()
