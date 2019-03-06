@@ -68,18 +68,17 @@ def setup():
 def disassemble():
     i = -1
     j = -1
-    z = -1
+    broken = True
 
     for instr in instructions:
 
         i += 1
-        j += 1
-        z += 1
-        mem.append(str(96 + (j * 4))) # memory location
+
+        mem.append(str(96 + (i * 4))) # memory location
         opcode.append(int(instr, base=2) >> 21)
 
-        if( opcode[z] == 1112 ):  # if opcode = 1112 -> ADD
-            opcodeStr.append("\tADD")
+        if( opcode[i] == 1112 ):  # if opcode = 1112 -> ADD
+            opcodeStr.append("\tADD")        # R Format
 
             arg1.append((int(instr, base=2) & rnMask) >> 5)
             arg2.append((int(instr, base=2) & rmMask) >> 16)
@@ -91,8 +90,8 @@ def disassemble():
 
             instrSpaced.append(binToSpacedR(instr))
 
-        elif( opcode[z] == 1624 ): # SUB = 1624
-            opcodeStr.append("\tSUB")
+        elif( opcode[i] == 1624 ):           # SUB = 1624
+            opcodeStr.append("\tSUB")        # R Format
 
             arg1.append((int(instr, base=2) & rnMask) >> 5)
             arg2.append((int(instr, base=2) & rmMask) >> 16)
@@ -104,8 +103,8 @@ def disassemble():
 
             instrSpaced.append(binToSpacedR(instr))
 
-        elif( opcode[z] >= 1160 and opcode[z] <= 1161 ): # ADDI => 1160 - 1161
-            opcodeStr.append("\tADDI")                     # Immediate Instr.
+        elif( opcode[i] >= 1160 and opcode[i] <= 1161 ):   # ADDI => 1160 - 1161
+            opcodeStr.append("\tADDI")                     # I Format
 
             arg1.append((int(instr, base=2) & rnMask) >> 5)
             arg2.append((int(instr, base=2) & imMask) >> 10)
@@ -113,12 +112,12 @@ def disassemble():
 
             arg1Str.append("\tR" + str(arg3[i]))
             arg2Str.append(", R" + str(arg1[i]))
-            arg3Str.append(", #" + str(binToDecimal(instr[10:22])))
+            arg3Str.append(", #" + str(binToDecimalPos(instr[10:22])))
 
             instrSpaced.append(binToSpacedI(instr))
 
-        elif( opcode[z] >= 1672 and opcode[z] <= 1673 ): # SUBI => 1672 - 1673
-            opcodeStr.append("\tSUBI")                     # Immediate Instr.
+        elif( opcode[i] >= 1672 and opcode[i] <= 1673 ): # SUBI => 1672 - 1673
+            opcodeStr.append("\tSUBI")                     # I Format
 
             arg1.append((int(instr, base=2) & rnMask) >> 5)
             arg2.append((int(instr, base=2) & imMask) >> 10)
@@ -126,12 +125,12 @@ def disassemble():
 
             arg1Str.append("\tR" + str(arg3[i]))
             arg2Str.append(", R" + str(arg1[i]))
-            arg3Str.append(", #" + str(binToDecimal(instr[10:22])))
+            arg3Str.append(", #" + str(binToDecimalPos(instr[10:22])))
 
             instrSpaced.append(binToSpacedI(instr))
 
-        elif( opcode[z] == 1104 ): # AND => 1104
-            opcodeStr.append("\tAND")  # R TYPE INSTRUCTION
+        elif( opcode[i] == 1104 ): # AND => 1104
+            opcodeStr.append("\tAND")  # R Format
 
             arg1.append((int(instr, base=2) & rnMask) >> 5)
             arg2.append((int(instr, base=2) & rmMask) >> 16)
@@ -143,8 +142,8 @@ def disassemble():
 
             instrSpaced.append(binToSpacedR(instr))
 
-        elif( opcode[z] == 1360 ): # ORR => 1360
-            opcodeStr.append("\tORR")  # R TYPE INSTRUCTION
+        elif( opcode[i] == 1360 ): # ORR => 1360
+            opcodeStr.append("\tORR")  # R Format
 
             arg1.append((int(instr, base=2) & rnMask) >> 5)
             arg2.append((int(instr, base=2) & rmMask) >> 16)
@@ -156,7 +155,7 @@ def disassemble():
 
             instrSpaced.append(binToSpacedR(instr))
 
-        elif( opcode[z] == 1872 ): # EOR => 1872
+        elif( opcode[i] == 1872 ): # EOR => 1872
             opcodeStr.append("\tEOR")  # R TYPE INSTRUCTION
 
             arg1.append((int(instr, base=2) & rnMask) >> 5)
@@ -169,7 +168,7 @@ def disassemble():
 
             instrSpaced.append(binToSpacedR(instr))
 
-        elif( opcode[z] == 1690 ): # LSR => 1690
+        elif( opcode[i] == 1690 ): # LSR => 1690
             opcodeStr.append("\tLSR")  # R TYPE INSTRUCTION
 
             arg1.append((int(instr, base=2) & rnMask) >> 5)  # arg1 is R1
@@ -182,7 +181,7 @@ def disassemble():
 
             instrSpaced.append(binToSpacedR(instr))
 
-        elif( opcode[z] == 1691 ): # LSL => 1691
+        elif( opcode[i] == 1691 ): # LSL => 1691
             opcodeStr.append("\tLSL")  # R TYPE INSTRUCTION
 
             arg1.append((int(instr, base=2) & rnMask) >> 5)  # arg1 is R1
@@ -195,8 +194,8 @@ def disassemble():
 
             instrSpaced.append(binToSpacedR(instr))
 
-        elif( opcode[z] == 1984 ): # STUR => 1984
-            opcodeStr.append("\tSTUR")
+        elif( opcode[i] == 1984 ): # STUR => 1984
+            opcodeStr.append("\tSTUR") # D TYPE INSTRUCTION
 
             arg1.append((int(instr, base=2) & rnMask) >> 5)  # R2
             arg2.append((int(instr, base=2) & rmMask) >> 12)  # address
@@ -204,12 +203,12 @@ def disassemble():
 
             arg1Str.append("\tR" + str(arg3[i]))
             arg2Str.append(", [R" + str(arg1[i]))
-            arg3Str.append(", #" + str(binToDecimal(instr[12:20])) + "]")
+            arg3Str.append(", #" + str(binToDecimalPos(instr[12:20])) + "]")
 
-            instrSpaced.append(binToSpacedR(instr))
+            instrSpaced.append(binToSpacedD(instr))
 
-        elif( opcode[z] == 1986 ): # LDUR => 1986
-            opcodeStr.append("\tLDUR")
+        elif( opcode[i] == 1986 ): # LDUR => 1986
+            opcodeStr.append("\tLDUR") # D TYPE INSTRUCTION
 
             arg1.append((int(instr, base=2) & rnMask) >> 5)  # R2
             arg2.append((int(instr, base=2) & rmMask) >> 16)  # address
@@ -217,25 +216,25 @@ def disassemble():
 
             arg1Str.append("\tR" + str(arg3[i]))
             arg2Str.append(", [R" + str(arg1[i]))
-            arg3Str.append(", #" + str(binToDecimal(instr[12:20])) + "]")
+            arg3Str.append(", #" + str(binToDecimalPos(instr[12:20])) + "]")
 
-            instrSpaced.append(binToSpacedR(instr))
+            instrSpaced.append(binToSpacedD(instr))
 
-        elif( opcode[z] >= 160 and opcode[z] <= 191 ):  # B => 160 - 191
-            opcodeStr.append("\tB")
+        elif( opcode[i] >= 160 and opcode[i] <= 191 ):  # B => 160 - 191
+            opcodeStr.append("\tB") # B TYPE INSTRUCTION
 
             arg1.append('')
             arg2.append('')
             arg3.append('')
 
-            arg1Str.append("\t#" + str(binToDecimal(instr[6:32])))
+            arg1Str.append("\t#" + str(binToDecimalPos(instr[6:32])))
             arg2Str.append('')
             arg3Str.append('')
 
             instrSpaced.append(binToSpacedB(instr))
 
-        elif( opcode[z] >= 1440 and opcode[z] <= 1447 ):  # CBZ => 1440 - 1447
-            opcodeStr.append("\tCBZ")
+        elif( opcode[i] >= 1440 and opcode[i] <= 1447 ):  # CBZ => 1440 - 1447
+            opcodeStr.append("\tCBZ") # CB TYPE INSTRUCTION
 
             arg1.append((int(instr, base=2) & addr2Mask) >> 5)
             arg2.append((int(instr, base=2) & rdMask) >> 0)
@@ -247,8 +246,8 @@ def disassemble():
 
             instrSpaced.append(binToSpacedCB(instr))
 
-        elif( opcode[z] >= 1448 and opcode[z] <= 1455 ):  # CBNZ => 1448 - 1455
-            opcodeStr.append("\tCBNZ")
+        elif( opcode[i] >= 1448 and opcode[i] <= 1455 ):  # CBNZ => 1448 - 1455
+            opcodeStr.append("\tCBNZ") # CB TYPE INSTRUCTION
 
             arg1.append((int(instr, base=2) & addr2Mask) >> 5)
             arg2.append((int(instr, base=2) & rdMask) >> 0)
@@ -260,8 +259,8 @@ def disassemble():
 
             instrSpaced.append(binToSpacedCB(instr))
 
-        elif( opcode[z] >= 1684 and opcode[z] <= 1687 ):
-            opcodeStr.append("\tMOVZ")
+        elif( opcode[i] >= 1684 and opcode[i] <= 1687 ):
+            opcodeStr.append("\tMOVZ") # IM TYPE INSTRUCTION
 
             arg1.append((int(instr, base=2) & imdataMask) >> 5)
             arg2.append(16*((int(instr, base=2) & imsftMask) >> 21))
@@ -271,10 +270,10 @@ def disassemble():
             arg2Str.append(", " + str(arg1[i]))
             arg3Str.append(", LSL " + str(arg2[i]))
 
-            instrSpaced.append(binToSpacedCB(instr))
+            instrSpaced.append(binToSpacedIM(instr))
 
-        elif( opcode[z] >= 1940 and opcode[z] <= 1943 ):
-            opcodeStr.append("\tMOVK")
+        elif( opcode[i] >= 1940 and opcode[i] <= 1943 ):
+            opcodeStr.append("\tMOVK") # IM TYPE INSTRUCTION
 
             arg1.append((int(instr, base=2) & imdataMask) >> 5)
             arg2.append(16*((int(instr, base=2) & imsftMask) >> 21))
@@ -284,9 +283,9 @@ def disassemble():
             arg2Str.append(", " + str(arg1[i]))
             arg3Str.append(", LSL " + str(arg2[i]))
 
-            instrSpaced.append(binToSpacedCB(instr))
+            instrSpaced.append(binToSpacedIM(instr))
 
-        elif( opcode[z] == 2038 ): # BREAK => 2038
+        elif( opcode[i] == 2038 ): # BREAK => 2038
             opcodeStr.append("\tBREAK")
 
             arg1.append('')
@@ -297,14 +296,27 @@ def disassemble():
             arg2Str.append('')
             arg3Str.append('')
 
-            instrSpaced.append(instr)
-            # something about masking with 0x1FFFFF
+            instrSpaced.append(binToSpacedBreak(instr))
 
-      #  else: convert binary number
-            #if negative
-                #2s comp negative to decimal
-            #else
-                #2s comp positive to decimal (already helper function written)
+        elif (broken):
+            j += 1
+            binMem.append((int(instr, base=2) >> 31 ) & 0x1)
+
+            if( binMem[j] == 1 ):
+                opcodeStr.append("\t" + str(binToDecimalNeg(instr)))
+
+            elif( binMem[j] == 0 ):
+                opcodeStr.append("\t" + str(binToDecimalPos(instr)))
+
+            arg1.append('')
+            arg2.append('')
+            arg3.append('')
+
+            arg1Str.append('')
+            arg2Str.append('')
+            arg3Str.append('')
+
+            instrSpaced.append(binToSpacedInt(instr))
 
 def formatOutput():
     with open(output + "_dis.txt", 'w') as myFile:
@@ -337,7 +349,16 @@ def binToSpacedB(s):
 def binToSpacedCB(s):
     return s[0:8] + " " + s[8:27] + " " + s[27: 32]
 
-def binToDecimal(s):
+def binToSpacedIM(s):
+    return s[ 0:9 ] + " " + s[ 9:11 ] + " " + s[ 11:27 ] + " " + s[ 27:32 ]
+
+def binToSpacedBreak(s):
+    return s[ 0:8 ] + " " + s[ 8:11 ] + " " + s[ 11:16 ] + " " + s[ 16:21 ] + " " + s[ 21:26 ] + " " + s[ 26:32 ]
+
+def binToSpacedInt(s):
+    return s[ 0:32 ]
+
+def binToDecimalPos(s):
 
     flipped = s[::-1]
     value = 0
@@ -345,31 +366,26 @@ def binToDecimal(s):
 
     for char in flipped:
         if (char == '1'):
-            value += 2**i
+            value += 2**(i-1)
         i += 1
-
-
 
     return value
 
-def unsingedToTwos(bitString):
-    firstOne = False
-    newBitString = ''
+def binToDecimalNeg(s):
+    flipped = s[::-1]
+    value = 0
+    i = -1
 
-    for bit in bitString:
+    for char in flipped:
+        if (char == '0'):
+            value += 2**i
+        i += 1
 
-        if not firstOne:  # don't flip yet
-            newBitString += bit
-            if bit == '1':
-                firstOne = True
-        elif firstOne:  # flip the bit
-            if bit == '0':
-                newBitString += '1'
-            elif bit == '1':
-                newBitString += '0'
-    # print "bit string now = " + newBitString
+    value = -value - 1
 
-    return newBitString
+    return value
+
+
 
 if __name__ == "__main__":
     dis = Disassembler()

@@ -4,6 +4,9 @@
     <list default="true" id="e4d19b2e-63b7-4cc7-ae1b-7e2ae04294ce" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bin/Test.py" beforeDir="false" afterPath="$PROJECT_DIR$/bin/Test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/output_dis.txt" beforeDir="false" afterPath="$PROJECT_DIR$/output_dis.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/team22_project1.zip" beforeDir="false" afterPath="$PROJECT_DIR$/team22_project1.zip" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test3_bin.txt" beforeDir="false" afterPath="$PROJECT_DIR$/test3_bin.txt" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -16,8 +19,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/bin/Test.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="97">
-              <caret line="266" column="68" selection-start-line="266" selection-start-column="68" selection-end-line="266" selection-end-column="68" />
+            <state relative-caret-position="153">
+              <caret line="368" column="29" selection-start-line="368" selection-start-column="29" selection-end-line="368" selection-end-column="29" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
               </folding>
@@ -26,6 +29,11 @@
         </entry>
       </file>
     </leaf>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>[i]</find>
+    </findStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -37,11 +45,11 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
-    <option name="x" value="85" />
-    <option name="y" value="25" />
-    <option name="width" value="1750" />
-    <option name="height" value="980" />
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="470" />
+    <option name="y" value="61" />
+    <option name="width" value="924" />
+    <option name="height" value="1141" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
@@ -49,22 +57,7 @@
     </navigator>
     <panes>
       <pane id="Scope" />
-      <pane id="ProjectPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="stumpyleg" type="b2602c69:ProjectViewProjectNode" />
-              <item name="stumpyleg" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="stumpyleg" type="b2602c69:ProjectViewProjectNode" />
-              <item name="stumpyleg" type="462c0819:PsiDirectoryNode" />
-              <item name="bin" type="462c0819:PsiDirectoryNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
+      <pane id="ProjectPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -99,17 +92,17 @@
       <workItem from="1551342961769" duration="9324000" />
       <workItem from="1551414244020" duration="1771000" />
       <workItem from="1551846894936" duration="10474000" />
+      <workItem from="1551892492239" duration="5676000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="22754000" />
+    <option name="totallyTimeSpent" value="28430000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-7" y="-7" width="1550" height="838" extended-state="6" />
-    <editor active="true" />
+    <frame x="-7" y="-7" width="1042" height="659" extended-state="6" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.23489933" />
+      <window_info content_ui="combo" id="Project" order="0" weight="0.50319827" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -123,7 +116,7 @@
       <window_info anchor="bottom" id="Version Control" order="8" />
       <window_info anchor="bottom" id="Database Changes" order="9" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
-      <window_info active="true" anchor="bottom" x="-1695" y="457" width="1488" height="463" id="Terminal" order="11" type="WINDOWED" visible="true" weight="0.3286119" />
+      <window_info anchor="bottom" x="0" y="30" width="753" height="530" id="Terminal" order="11" type="WINDOWED" weight="0.3286119" />
       <window_info anchor="bottom" id="Python Console" order="12" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -138,8 +131,8 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/bin/Test.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="97">
-          <caret line="266" column="68" selection-start-line="266" selection-start-column="68" selection-end-line="266" selection-end-column="68" />
+        <state relative-caret-position="153">
+          <caret line="368" column="29" selection-start-line="368" selection-start-column="29" selection-end-line="368" selection-end-column="29" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
           </folding>
