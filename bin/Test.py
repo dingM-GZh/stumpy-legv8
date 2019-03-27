@@ -30,7 +30,6 @@ imdataMask = 0x1FFFE0  # data for IM type
 input = "input"
 output = "output"
 
-
 class Disassembler:
 
     global opcodeStr
@@ -57,7 +56,7 @@ def setup():
     for i in range(len(sys.argv)):
         if (sys.argv[i] == '-i' and i < (len(sys.argv) - 1)):
             input = sys.argv[i + 1]
-        elif (sys.argv[i] == '-o' and i < (len(sys.argv) - 1)):
+        if (sys.argv[i] == '-o' and i < (len(sys.argv) - 1)):
             output = sys.argv[i + 1]
 
     # open file for reading
@@ -323,7 +322,7 @@ def formatOutput():
         i = 0
         for opcode in opcodeStr:
             writeData = instrSpaced[i] + "\t" + mem[i] + ' ' + opcode + arg1Str[i] + arg2Str[i] + arg3Str[i] + '\n'
-            print writeData
+            #print writeData
             myFile.write(writeData)
             i += 1
 
@@ -384,8 +383,6 @@ def binToDecimalNeg(s):
     value = -value - 1
 
     return value
-
-
 
 if __name__ == "__main__":
     dis = Disassembler()

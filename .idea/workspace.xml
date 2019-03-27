@@ -4,9 +4,6 @@
     <list default="true" id="e4d19b2e-63b7-4cc7-ae1b-7e2ae04294ce" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bin/Test.py" beforeDir="false" afterPath="$PROJECT_DIR$/bin/Test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output_dis.txt" beforeDir="false" afterPath="$PROJECT_DIR$/output_dis.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/team22_project1.zip" beforeDir="false" afterPath="$PROJECT_DIR$/team22_project1.zip" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test3_bin.txt" beforeDir="false" afterPath="$PROJECT_DIR$/test3_bin.txt" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -19,8 +16,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/bin/Test.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="153">
-              <caret line="368" column="29" selection-start-line="368" selection-start-column="29" selection-end-line="368" selection-end-column="29" />
+            <state relative-caret-position="272">
+              <caret line="58" column="8" selection-start-line="58" selection-start-column="8" selection-end-line="58" selection-end-column="8" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
               </folding>
@@ -46,8 +43,8 @@
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="470" />
-    <option name="y" value="61" />
+    <option name="x" value="469" />
+    <option name="y" value="59" />
     <option name="width" value="924" />
     <option name="height" value="1141" />
   </component>
@@ -55,10 +52,7 @@
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
-    <panes>
-      <pane id="Scope" />
-      <pane id="ProjectPane" />
-    </panes>
+    <panes />
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
@@ -93,14 +87,16 @@
       <workItem from="1551414244020" duration="1771000" />
       <workItem from="1551846894936" duration="10474000" />
       <workItem from="1551892492239" duration="5676000" />
+      <workItem from="1553715696074" duration="1414000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="28430000" />
+    <option name="totallyTimeSpent" value="29844000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="1042" height="659" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" weight="0.50319827" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -131,8 +127,8 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/bin/Test.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
-          <caret line="368" column="29" selection-start-line="368" selection-start-column="29" selection-end-line="368" selection-end-column="29" />
+        <state relative-caret-position="272">
+          <caret line="58" column="8" selection-start-line="58" selection-start-column="8" selection-end-line="58" selection-end-column="8" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
           </folding>
