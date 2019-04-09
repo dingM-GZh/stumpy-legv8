@@ -45,12 +45,10 @@ class Disassembler:
     global binMem
     global opcode
 
-    # def_init_(self):
-    def run(self):
+    def __init__(self):
         self.setup()
         self.disassemble()
         self.formatOutput()
-
 
 # gets the arguments and read in input -> stores input in instructions
     def setup(self):
@@ -331,6 +329,11 @@ class Disassembler:
                 myFile.write(writeData)
                 i += 1
 
+class Simulator(Disassembler):
+
+    def __init__(self): #override init
+        Disassembler.__init__(self) #super.init
+
 
 def binToSpacedR(s):
     spaced = s[0:11] + " " + s[11:16] + " " + s[16:22] + " " + s[22: 27]
@@ -390,5 +393,5 @@ def binToDecimalNeg(s):
     return value
 
 if __name__ == "__main__":
-    dis = Disassembler()
-    dis.run()
+    sim = Simulator()
+
