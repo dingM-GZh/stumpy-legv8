@@ -16,6 +16,7 @@ instructions = []
 instrSpaced = []
 registers = []
 numInstr = 0
+numData = 0
 
 # masks
 rnMask = 0x3e0  # 1st argument ARM Rn
@@ -108,6 +109,7 @@ class Disassembler:
     global binMem
     global opcode
     global numInstr
+    global numData
 
     def __init__(self):
         self.setup()
@@ -388,6 +390,7 @@ class Disassembler:
                 instrSpaced.append(binToSpacedInt(instr))
 
         self.numInstr = i - j
+        self.numData = j
 
     def formatOutput(self):
         with open(output + "_dis.txt", 'w') as myFile:
@@ -419,14 +422,23 @@ class Simulator(Disassembler):
                 writeData += 'cycle: ' + str(mem[i])
                 writeData += '\t' + opcodeStr[i]
                 writeData += '   \t' + arg1Str[i] + '\t' + arg2Str[i].replace(',','') + '\t' + arg3Str[i].replace(',','')
-                writeData += '\n\nRegisters:'
 
+                #print registers (4x8)
+                writeData += '\n\nRegisters:'
                 for x in range(0, 4):
                     writeData += '\nr'
-                    writeData += '' if x * 8 > 9 else '0'
+                    writeData += '' if x * 8 > 9 else '0' #single digit numbers have a 0 in front
                     writeData += str(x * 8) + ':'
                     for y in range(0,8):
                         writeData += '\t' + str(registers[x*y])
+
+                #print data
+                writeData += '\n\nData:'
+                for x in range(0, self.numData):
+                    if (x % 8 == 0):
+                        writeData += '\n' + str(mem[self.numInstr + x]) + ":"
+                    writeData += opcodeStr[self.numInstr + x]
+
 
                 print writeData
                 myFile.write(writeData)
