@@ -14,6 +14,8 @@ opcode = []
 opcodeStr = []
 instructions = []
 instrSpaced = []
+registers = []
+numInstr = 0
 
 # masks
 rnMask = 0x3e0  # 1st argument ARM Rn
@@ -30,6 +32,67 @@ imdataMask = 0x1FFFE0  # data for IM type
 input = "input"
 output = "NOTWORKING"
 
+def binToSpacedR(s):
+    spaced = s[0:11] + " " + s[11:16] + " " + s[16:22] + " " + s[22: 27]
+    spaced += " " + s[27:32]
+    return spaced
+
+
+def binToSpacedD(s):
+    spaced = s[0:11] + " " + s[11:20] + " " + s[20:22] + " " + s[22:27]
+    spaced += " " + s[27:32]
+    return spaced
+
+def binToSpacedI(s):
+    spaced = s[0:11] + " " + s[11: 22] + " " + s[22:27] + " " + s[27:32]
+    return spaced
+
+def binToSpacedB(s):
+    return s[0:6] + " " + s[6:32]
+
+def binToSpacedCB(s):
+    return s[0:8] + " " + s[8:27] + " " + s[27: 32]
+
+def binToSpacedIM(s):
+    return s[ 0:9 ] + " " + s[ 9:11 ] + " " + s[ 11:27 ] + " " + s[ 27:32 ]
+
+def binToSpacedBreak(s):
+    return s[ 0:8 ] + " " + s[ 8:11 ] + " " + s[ 11:16 ] + " " + s[ 16:21 ] + " " + s[ 21:26 ] + " " + s[ 26:32 ]
+
+def binToSpacedInt(s):
+    return s[ 0:32 ]
+
+def binToDecimalPos(s):
+
+    flipped = s[::-1]
+    value = 0
+    i = 0
+
+    #print 'bitstring: ' + s
+    #print 'flipped: ' + flipped
+
+    for char in flipped:
+       # print 'value is: ' + str(value) + ' when i is: ' + str(i)
+        if (char == '1'):
+            value += 2**(i)
+        i += 1
+
+    return value
+
+def binToDecimalNeg(s):
+    flipped = s[::-1]
+    value = 0
+    i = -1
+
+    for char in flipped:
+        if (char == '0'):
+            value += 2**i
+        i += 1
+
+    value = -value - 1
+
+    return value
+
 class Disassembler:
 
     output = "NOTWORKING"
@@ -44,6 +107,7 @@ class Disassembler:
     global mem
     global binMem
     global opcode
+    global numInstr
 
     def __init__(self):
         self.setup()
@@ -288,6 +352,9 @@ class Disassembler:
                 instrSpaced.append(binToSpacedIM(instr))
 
             elif( opcode[i] == 2038 ): # BREAK => 2038
+
+                self.numInstr = i
+
                 opcodeStr.append("\tBREAK")
 
                 arg1.append('')
@@ -320,6 +387,8 @@ class Disassembler:
 
                 instrSpaced.append(binToSpacedInt(instr))
 
+        self.numInstr = i - j
+
     def formatOutput(self):
         with open(output + "_dis.txt", 'w') as myFile:
             i = 0
@@ -329,72 +398,39 @@ class Disassembler:
                 myFile.write(writeData)
                 i += 1
 
+
 class Simulator(Disassembler):
 
+    global registers
+    global numInstr
+    registers = [0 for i in xrange(32)]
+
     def __init__(self): #override init
+
+        #disassemble
         Disassembler.__init__(self) #super.init
 
+        with open(output + '_sim.txt', 'w') as myFile:
+            for i in range(0, self.numInstr): #loop for number of instructions
 
-def binToSpacedR(s):
-    spaced = s[0:11] + " " + s[11:16] + " " + s[16:22] + " " + s[22: 27]
-    spaced += " " + s[27:32]
-    return spaced
+                writeData = ''
 
+                writeData += '====================\n'
+                writeData += 'cycle: ' + str(mem[i])
+                writeData += '\t' + opcodeStr[i]
+                writeData += '   \t' + arg1Str[i] + '\t' + arg2Str[i].replace(',','') + '\t' + arg3Str[i].replace(',','')
+                writeData += '\n\nRegisters:'
 
-def binToSpacedD(s):
-    spaced = s[0:11] + " " + s[11:20] + " " + s[20:22] + " " + s[22:27]
-    spaced += " " + s[27:32]
-    return spaced
+                for x in range(0, 4):
+                    writeData += '\nr'
+                    writeData += '' if x * 8 > 9 else '0'
+                    writeData += str(x * 8) + ':'
+                    for y in range(0,8):
+                        writeData += '\t' + str(registers[x*y])
 
-def binToSpacedI(s):
-    spaced = s[0:11] + " " + s[11: 22] + " " + s[22:27] + " " + s[27:32]
-    return spaced
+                print writeData
+                myFile.write(writeData)
 
-def binToSpacedB(s):
-    return s[0:6] + " " + s[6:32]
-
-def binToSpacedCB(s):
-    return s[0:8] + " " + s[8:27] + " " + s[27: 32]
-
-def binToSpacedIM(s):
-    return s[ 0:9 ] + " " + s[ 9:11 ] + " " + s[ 11:27 ] + " " + s[ 27:32 ]
-
-def binToSpacedBreak(s):
-    return s[ 0:8 ] + " " + s[ 8:11 ] + " " + s[ 11:16 ] + " " + s[ 16:21 ] + " " + s[ 21:26 ] + " " + s[ 26:32 ]
-
-def binToSpacedInt(s):
-    return s[ 0:32 ]
-
-def binToDecimalPos(s):
-
-    flipped = s[::-1]
-    value = 0
-    i = 0
-
-    #print 'bitstring: ' + s
-    #print 'flipped: ' + flipped
-
-    for char in flipped:
-       # print 'value is: ' + str(value) + ' when i is: ' + str(i)
-        if (char == '1'):
-            value += 2**(i)
-        i += 1
-
-    return value
-
-def binToDecimalNeg(s):
-    flipped = s[::-1]
-    value = 0
-    i = -1
-
-    for char in flipped:
-        if (char == '0'):
-            value += 2**i
-        i += 1
-
-    value = -value - 1
-
-    return value
 
 if __name__ == "__main__":
     sim = Simulator()
