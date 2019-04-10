@@ -371,9 +371,13 @@ def binToDecimalPos(s):
     value = 0
     i = 0
 
+    #print 'bitstring: ' + s
+    #print 'flipped: ' + flipped
+
     for char in flipped:
+       # print 'value is: ' + str(value) + ' when i is: ' + str(i)
         if (char == '1'):
-            value += 2**(i-1)
+            value += 2**(i)
         i += 1
 
     return value
