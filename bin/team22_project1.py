@@ -94,6 +94,12 @@ def binToDecimalNeg(s):
 
     return value
 
+def regToInt(str):
+    return int(str.replace(',','').replace('R',''))
+
+def literalToInt(str):
+    return int(str.replace(', #','')) if "," in str else int(str.replace('#',''))
+
 class Disassembler:
 
     output = "NOTWORKING"
@@ -423,6 +429,111 @@ class Simulator(Disassembler):
                 writeData += '\t' + opcodeStr[i]
                 writeData += '   \t' + arg1Str[i] + '\t' + arg2Str[i].replace(',','') + '\t' + arg3Str[i].replace(',','')
 
+                if (opcode[i] == 1112):  # ADD
+
+                    a1 = regToInt(arg1Str[i])
+                    a2 = regToInt(arg2Str[i])
+                    a3 = regToInt(arg3Str[i])
+
+                    registers[a1] = registers[a2] + registers [a3]
+
+                elif (opcode[i] == 1624):  # SUB
+
+                    a1 = regToInt(arg1Str[i])
+                    a2 = regToInt(arg2Str[i])
+                    a3 = regToInt(arg3Str[i])
+
+                    registers[a1] = registers[a2] - registers [a3]
+
+                elif (opcode[i] >= 1160 and opcode[i] <= 1161):  # ADDI
+
+                    a1 = regToInt(arg1Str[i])
+                    a2 = regToInt(arg2Str[i])
+                    a3 = literalToInt(arg3Str[i])
+
+                    registers[a1] = registers[a2] + a3
+
+                elif (opcode[i] >= 1672 and opcode[i] <= 1673):  # SUBI
+
+                    a1 = regToInt(arg1Str[i])
+                    a2 = regToInt(arg2Str[i])
+                    a3 = literalToInt(arg3Str[i])
+
+                    registers[a1] = registers[a2] - a3
+
+                elif (opcode[i] == 1104):  # AND
+
+                    a1 = regToInt(arg1Str[i])
+                    a2 = regToInt(arg2Str[i])
+                    a3 = regToInt(arg3Str[i])
+
+                    registers[a1] = a2 & a3
+
+
+                elif (opcode[i] == 1360):  # ORR
+
+                    a1 = regToInt(arg1Str[i])
+                    a2 = regToInt(arg2Str[i])
+                    a3 = regToInt(arg3Str[i])
+
+                    registers[a1] = a2 | a3
+
+                elif (opcode[i] == 1872):  # EOR
+
+                    a1 = regToInt(arg1Str[i])
+                    a2 = regToInt(arg2Str[i])
+                    a3 = regToInt(arg3Str[i])
+
+                    registers[a1] = a2 ^ a3
+
+                elif (opcode[i] == 1690):  # LSR
+
+                    a1 = regToInt(arg1Str[i])
+                    a2 = regToInt(arg2Str[i])
+                    a3 = regToInt(arg3Str[i])
+
+                    registers[a1] = a2 >> a3
+
+                elif (opcode[i] == 1691):  # LSL => 1691
+
+                    a1 = regToInt(arg1Str[i])
+                    a2 = regToInt(arg2Str[i])
+                    a3 = regToInt(arg3Str[i])
+
+                    registers[a1] = a2 << a3
+
+
+                elif (opcode[i] >= 160 and opcode[i] <= 191):  # B
+
+                    a1 = literalToInt(arg1Str[i])
+                    i += a1
+
+                elif (opcode[i] >= 1440 and opcode[i] <= 1447):  # CBZ
+
+                    a1 = regToInt(arg1Str[i])
+                    a2 = literalToInt(arg2Str[i])
+
+                    if (a1 == 0):
+                        i += a2
+
+                elif (opcode[i] >= 1448 and opcode[i] <= 1455):  # CBNZ
+
+                    a1 = regToInt(arg1Str[i])
+                    a2 = literalToInt(arg2Str[i])
+
+                    if (a1 != 0):
+                        i += a2
+
+                elif (opcode[i] >= 1684 and opcode[i] <= 1687): #MOVZ
+                    pass
+
+                elif (opcode[i] >= 1940 and opcode[i] <= 1943): #MOVK
+                    pass
+
+                elif (opcode[i] == 2038):  # BREAK
+                    pass
+
+
                 #print registers (4x8)
                 writeData += '\n\nRegisters:'
                 for x in range(0, 4):
@@ -442,6 +553,7 @@ class Simulator(Disassembler):
 
                 print writeData
                 myFile.write(writeData)
+
 
 
 if __name__ == "__main__":
