@@ -1,4 +1,5 @@
 import sys
+import re
 import os
 import fileinput
 
@@ -95,10 +96,10 @@ def binToDecimalNeg(s):
     return value
 
 def regToInt(str):
-    return int(str.replace(',','').replace('R',''))
+    return int(re.sub('[^0-9]', '', str))
 
 def literalToInt(str):
-    return int(str.replace(', #','')) if "," in str else int(str.replace('#',''))
+    return int(re.sub('[^0-9]', '', str))
 
 class Disassembler:
 
@@ -399,11 +400,11 @@ class Disassembler:
         self.numData = j
 
     def formatOutput(self):
-        with open(output + "_dis.txt", 'w') as myFile:
+        with open(output, 'w') as myFile:
             i = 0
             for opcode in opcodeStr:
                 writeData = instrSpaced[i] + "\t" + mem[i] + ' ' + opcode + arg1Str[i] + arg2Str[i] + arg3Str[i] + '\n'
-                print writeData
+              #  print writeData
                 myFile.write(writeData)
                 i += 1
 
@@ -419,12 +420,12 @@ class Simulator(Disassembler):
         #disassemble
         Disassembler.__init__(self) #super.init
 
-        with open(output + '_sim.txt', 'w') as myFile:
+        with open(output, 'w') as myFile:
             for i in range(0, self.numInstr): #loop for number of instructions
 
                 writeData = ''
 
-                writeData += '====================\n'
+                writeData += '\n====================\n'
                 writeData += 'cycle: ' + str(mem[i])
                 writeData += '\t' + opcodeStr[i]
                 writeData += '   \t' + arg1Str[i] + '\t' + arg2Str[i].replace(',','') + '\t' + arg3Str[i].replace(',','')
@@ -506,7 +507,7 @@ class Simulator(Disassembler):
                 elif (opcode[i] >= 160 and opcode[i] <= 191):  # B
 
                     a1 = literalToInt(arg1Str[i])
-                    i += a1
+                    i += a1 - 1
 
                 elif (opcode[i] >= 1440 and opcode[i] <= 1447):  # CBZ
 
@@ -514,7 +515,7 @@ class Simulator(Disassembler):
                     a2 = literalToInt(arg2Str[i])
 
                     if (a1 == 0):
-                        i += a2
+                        i += a2 - 1
 
                 elif (opcode[i] >= 1448 and opcode[i] <= 1455):  # CBNZ
 
@@ -522,7 +523,7 @@ class Simulator(Disassembler):
                     a2 = literalToInt(arg2Str[i])
 
                     if (a1 != 0):
-                        i += a2
+                        i += a2 - 1
 
                 elif (opcode[i] >= 1684 and opcode[i] <= 1687): #MOVZ
                     pass
@@ -536,12 +537,14 @@ class Simulator(Disassembler):
 
                 #print registers (4x8)
                 writeData += '\n\nRegisters:'
+                index = 0
                 for x in range(0, 4):
                     writeData += '\nr'
                     writeData += '' if x * 8 > 9 else '0' #single digit numbers have a 0 in front
                     writeData += str(x * 8) + ':'
                     for y in range(0,8):
-                        writeData += '\t' + str(registers[x*y])
+                        writeData += '\t' + str(registers[index])
+                        index += 1
 
                 #print data
                 writeData += '\n\nData:'
@@ -553,7 +556,6 @@ class Simulator(Disassembler):
 
                 print writeData
                 myFile.write(writeData)
-
 
 
 if __name__ == "__main__":
