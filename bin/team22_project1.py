@@ -109,6 +109,7 @@ def binToDecimal(s):
 def parseInt(str):
     return int(re.sub('[^0-9]', '', str))
 
+
 class Disassembler:
 
     output = "NOTWORKING"
@@ -412,6 +413,9 @@ class Disassembler:
                 myFile.write(writeData)
                 i += 1
 
+    def malloc(self, wordCount):
+        for i in range(self.numInstr, wordCount):
+            opcodeStr.append('0')
 
 class Simulator(Disassembler):
 
@@ -426,6 +430,7 @@ class Simulator(Disassembler):
 
         pc = 0
         i = 0
+
         with open(output, 'w') as myFile:
             while (True): #loop for number of instructions
                 i += 1
@@ -558,15 +563,37 @@ class Simulator(Disassembler):
                     registers[a1] = a2 << a3
 
                 elif (opcode[pc] >= 1940 and opcode[pc] <= 1943): #MOVK
+
                     a1 = parseInt(arg1Str[pc])  # register
                     a2 = parseInt(arg2Str[pc])  # value
                     a3 = parseInt(arg3Str[pc])  # shift amount
 
                     registers[a1] = registers[a1] | (a2 << a3)
 
+                elif (opcode[pc] == 1984): # STUR
+
+                    a1 = parseInt(arg1Str[pc])  # register1
+                    a2 = parseInt(arg2Str[pc])  # register2
+                    a3 = parseInt(arg3Str[pc])  # value
+
+            #### My way of trying to mimic allocating memory like what happens when data fills with 0s after he stores 200 in mem[360] for the example output ###
+                #Does NOT work
+            #        print '\n a3: ' + str(a3) + '\n\n'
+            #
+             #       last = mem[mem.count(mem)]
+             #       print last
+             #       for i in range(0, registers[registers[a2] + a3 - last]):
+             #           mem.append(last + i * 4)
+
+
+                elif (opcode[pc] == 1986): # LDUR
+
+                    a1 = parseInt(arg1Str[pc])  # register1
+                    a2 = parseInt(arg2Str[pc])  # register2
+                    a3 = parseInt(arg3Str[pc])  # value
+
                 elif (opcode[pc] == 2038):  # BREAK
                     return
-
 
                 #print registers (4x8)
                 writeData += '\n\nRegisters:'
@@ -583,9 +610,8 @@ class Simulator(Disassembler):
                 writeData += '\n\nData:'
                 for x in range(0, self.numData):
                     if (x % 8 == 0):
-                        writeData += '\n' + str(mem[self.numInstr + x]) + ":"
+                        writeData += '\n' + str(mem[self.numInstr + x]) + ":" #new line
                     writeData += opcodeStr[self.numInstr + x]
-
 
                 print writeData
                 myFile.write(writeData)
