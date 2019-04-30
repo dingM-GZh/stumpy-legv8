@@ -9,13 +9,14 @@ arg3 = []  # <type 'list'>: [0, 10, 264, 0, 264, 48, 2, 172, 216, 260, 8, 6, 0, 
 arg1Str = []  # <type 'list'>: ['', '\tR1', '\tR1', '', '\tR1', '\tR1', '\tR10', '\tR3', '\tR4', .....]
 arg2Str = []  # <type 'list'>: ['', ', R0', ', 264', '', ', 264', ', #48', ', R1', ', 172', ', 216', ...]'
 arg3Str = []  # <type 'list'>: ['', ', #10', '(R0)', '', '(R0)', '', ', #2', '(R10)', '(R10)', '(R0)',...]
-mem = []  # <type 'list'>: [-1, -2, -3, 1, 2, 3, 0, 0, 5, -5, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0]
+addresses = []  # <type 'list'>: [-1, -2, -3, 1, 2, 3, 0, 0, 5, -5, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0]
 binMem = []  # <type 'list'>: ['11111111111111111111111111111111', '11111111111111111111111111111110', ...] opcode = []
 opcode = []
 opcodeStr = []
 instructions = []
 instrSpaced = []
 registers = []
+memory = []
 numInstr = 0
 numData = 0
 
@@ -109,6 +110,15 @@ def binToDecimal(s):
 def parseInt(str):
     return int(re.sub('[^0-9]', '', str))
 
+def baseEight(x):
+
+    base = 8
+
+    if (x % 8 == 0):
+        return x
+    else:
+        return baseEight(x + 1)
+
 
 class Disassembler:
 
@@ -121,7 +131,7 @@ class Disassembler:
     global arg1Str
     global arg2Str
     global arg3Str
-    global mem
+    global addresses
     global binMem
     global opcode
     global numInstr
@@ -158,7 +168,7 @@ class Disassembler:
 
             i += 1
 
-            mem.append(str(96 + (i * 4))) # memory location
+            addresses.append(str(96 + (i * 4))) # memory location
             opcode.append(int(instr, base=2) >> 21)
 
             if( opcode[i] == 1112 ):  # if opcode = 1112 -> ADD
@@ -385,11 +395,14 @@ class Disassembler:
 
                 instrSpaced.append(binToSpacedBreak(instr))
 
-            elif (broken):
+            elif (broken): #hit a break
                 j += 1
                 binMem.append((int(instr, base=2) >> 31 ) & 0x1)
 
                 opcodeStr.append("\t" + str(binToDecimal(instr)))
+                ptr = int(addresses[i])
+                memory[ptr] = int(binToDecimal(instr))
+                print '\nmem[' + str(ptr) + '] = ' + str(memory[ptr])
 
                 arg1.append('')
                 arg2.append('')
@@ -408,7 +421,7 @@ class Disassembler:
         with open(output, 'w') as myFile:
             i = 0
             for opcode in opcodeStr:
-                writeData = instrSpaced[i] + "\t" + mem[i] + ' ' + opcode + arg1Str[i] + arg2Str[i] + arg3Str[i] + '\n'
+                writeData = instrSpaced[i] + "\t" + addresses[i] + ' ' + opcode + arg1Str[i] + arg2Str[i] + arg3Str[i] + '\n'
                 print writeData
                 myFile.write(writeData)
                 i += 1
@@ -437,7 +450,7 @@ class Simulator(Disassembler):
                 writeData = ''
 
                 writeData += '\n====================\n'
-                writeData += 'cycle ' + str(i) + ': ' + str(mem[pc])
+                writeData += 'cycle ' + str(i) + ': ' + str(addresses[pc])
                 writeData += '\t' + opcodeStr[pc]
                 writeData += '   \t' + arg1Str[pc] + '\t' + arg2Str[pc].replace(',','') + '\t' + arg3Str[pc].replace(',','')
 
@@ -572,25 +585,37 @@ class Simulator(Disassembler):
 
                 elif (opcode[pc] == 1984): # STUR
 
-                    a1 = parseInt(arg1Str[pc])  # register1
-                    a2 = parseInt(arg2Str[pc])  # register2
-                    a3 = parseInt(arg3Str[pc])  # value
+                    a1 = parseInt(arg1Str[pc])  # value
+                    a2 = parseInt(arg2Str[pc])  # Address
+                    a3 = parseInt(arg3Str[pc])  # Word Offset
 
-            #### My way of trying to mimic allocating memory like what happens when data fills with 0s after he stores 200 in mem[360] for the example output ###
-                #Does NOT work
-            #        print '\n a3: ' + str(a3) + '\n\n'
-            #
-             #       last = mem[mem.count(mem)]
-             #       print last
-             #       for i in range(0, registers[registers[a2] + a3 - last]):
-             #           mem.append(last + i * 4)
+                    for i in range(0, baseEight(a3)):
+
+                        ptr = int(addresses[a2]) + i * 4
+                        self.numData += 1
+                        addresses.append(str(int(addresses[addresses.__len__() - 1]) + 4))
+
+                        print i
+                        print a3
+
+                        if (i == a3 - 1):
+                            memory[ptr] = registers[a1]
+                        else:
+                            memory[ptr] = 0
+
+
 
 
                 elif (opcode[pc] == 1986): # LDUR
 
-                    a1 = parseInt(arg1Str[pc])  # register1
-                    a2 = parseInt(arg2Str[pc])  # register2
-                    a3 = parseInt(arg3Str[pc])  # value
+                    a1 = parseInt(arg1Str[pc])  # target register
+                    a2 = parseInt(arg2Str[pc])  # pointer register
+                    a3 = parseInt(arg3Str[pc])  # Word Offset
+
+                    ptr = int(addresses[a2]) + i * 4
+                    registers[a1] = memory[ptr]
+
+
 
                 elif (opcode[pc] == 2038):  # BREAK
                     return
@@ -608,10 +633,11 @@ class Simulator(Disassembler):
 
                 #print data
                 writeData += '\n\nData:'
-                for x in range(0, self.numData):
+                for x in range(0, self.numData - 1):
+                    ptr = int(addresses[self.numInstr + x]) + 8
                     if (x % 8 == 0):
-                        writeData += '\n' + str(mem[self.numInstr + x]) + ":" #new line
-                    writeData += opcodeStr[self.numInstr + x]
+                        writeData += '\n' + str(ptr) + ":" #new line
+                    writeData += '\t' + str(memory[ptr])
 
                 print writeData
                 myFile.write(writeData)
@@ -621,5 +647,9 @@ class Simulator(Disassembler):
 
 if __name__ == "__main__":
     #sim = Disassembler()
+    memory = [0 for i in xrange(1000)]
     sim = Simulator()
+   # for i in mem:
+    #    print i
+
 
