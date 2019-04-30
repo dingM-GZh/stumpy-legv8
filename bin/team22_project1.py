@@ -110,6 +110,7 @@ def parseInt(str):
     return int(re.sub('[^0-9]', '', str))
 
 
+# project 1
 class Disassembler:
 
     output = "NOTWORKING"
@@ -281,9 +282,9 @@ class Disassembler:
             elif( opcode[i] == 1984 ): # STUR => 1984
                 opcodeStr.append("\tSTUR") # D TYPE INSTRUCTION
 
-                arg1.append((int(instr, base=2) & rnMask) >> 5)  # R2
+                arg1.append((int(instr, base=2) & rnMask) >> 5)  # R2 (store location)
                 arg2.append((int(instr, base=2) & rmMask) >> 12)  # address
-                arg3.append((int(instr, base=2) & rdMask) >> 0)  # R1
+                arg3.append((int(instr, base=2) & rdMask) >> 0)  # R1 (original location)
 
                 arg1Str.append("\tR" + str(arg3[i]))
                 arg2Str.append(", [R" + str(arg1[i]))
@@ -294,9 +295,9 @@ class Disassembler:
             elif( opcode[i] == 1986 ): # LDUR => 1986
                 opcodeStr.append("\tLDUR") # D TYPE INSTRUCTION
 
-                arg1.append((int(instr, base=2) & rnMask) >> 5)  # R2
+                arg1.append((int(instr, base=2) & rnMask) >> 5)  # R2 (load location)
                 arg2.append((int(instr, base=2) & rmMask) >> 16)  # address
-                arg3.append((int(instr, base=2) & rdMask) >> 0)  # R1
+                arg3.append((int(instr, base=2) & rdMask) >> 0)  # R1 (save location)
 
                 arg1Str.append("\tR" + str(arg3[i]))
                 arg2Str.append(", [R" + str(arg1[i]))
@@ -417,6 +418,7 @@ class Disassembler:
         for i in range(self.numInstr, wordCount):
             opcodeStr.append('0')
 
+# project 2
 class Simulator(Disassembler):
 
     global registers
@@ -440,6 +442,16 @@ class Simulator(Disassembler):
                 writeData += 'cycle ' + str(i) + ': ' + str(mem[pc])
                 writeData += '\t' + opcodeStr[pc]
                 writeData += '   \t' + arg1Str[pc] + '\t' + arg2Str[pc].replace(',','') + '\t' + arg3Str[pc].replace(',','')
+
+                if ( opcode[pc] == 0 ): # NO OP
+
+                    a1 = arg1Str[pc]
+                    a2 = arg1Str[pc]
+                    a3 = arg1Str[pc]
+
+                    registers[a1] = 0x0
+                    registers[a2] = 0x0
+                    registers[a3] = 0x0
 
                 if (opcode[pc] == 1112):  # ADD
 
@@ -570,32 +582,43 @@ class Simulator(Disassembler):
 
                     registers[a1] = registers[a1] | (a2 << a3)
 
+# does this actually work?????????????????????????????????????????????????????????????????????????
                 elif (opcode[pc] == 1984): # STUR
 
                     a1 = parseInt(arg1Str[pc])  # register1
                     a2 = parseInt(arg2Str[pc])  # register2
                     a3 = parseInt(arg3Str[pc])  # value
 
+                    a2 = parseInt(opcodeStr[a2]) + a3 # calculate address using offset value
+                    temp = registers[a1] # store the item of into a temp
+                    opcodeStr[a2] = temp # store temp into the address
+
             #### My way of trying to mimic allocating memory like what happens when data fills with 0s after he stores 200 in mem[360] for the example output ###
                 #Does NOT work
-            #        print '\n a3: ' + str(a3) + '\n\n'
-            #
+             #       print '\n a3: ' + str(a3) + '\n\n'
+             #
              #       last = mem[mem.count(mem)]
              #       print last
              #       for i in range(0, registers[registers[a2] + a3 - last]):
-             #           mem.append(last + i * 4)
+             #           mem.append(last + i    `* 4)
 
 
+
+# does this actually work?????????????????????????????????????????????????????????????????????????
                 elif (opcode[pc] == 1986): # LDUR
 
                     a1 = parseInt(arg1Str[pc])  # register1
                     a2 = parseInt(arg2Str[pc])  # register2
                     a3 = parseInt(arg3Str[pc])  # value
 
+                    a2 = parseInt(opcodeStr[a2]) + a3 # calculate address use offset value
+                    temp = parseInt(opcodeStr[a2]) # load item from address into temp
+                    registers[a1] = temp # load item (in temp) to designated register
+
                 elif (opcode[pc] == 2038):  # BREAK
                     return
 
-                #print registers (4x8)
+                # print registers (4x8)
                 writeData += '\n\nRegisters:'
                 index = 0
                 for x in range(0, 4):
@@ -606,7 +629,7 @@ class Simulator(Disassembler):
                         writeData += '\t' + str(registers[index])
                         index += 1
 
-                #print data
+                # print data
                 writeData += '\n\nData:'
                 for x in range(0, self.numData):
                     if (x % 8 == 0):
