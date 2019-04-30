@@ -2,9 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e4d19b2e-63b7-4cc7-ae1b-7e2ae04294ce" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/Legv8-Disassembler.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Legv8-Disassembler.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output_dis.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test3_bin.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/team22_out.txt" beforeDir="false" afterPath="$PROJECT_DIR$/bin/team22_out.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/team22_out2.txt" beforeDir="false" afterPath="$PROJECT_DIR$/bin/team22_out2.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/team22_out9.txt" beforeDir="false" afterPath="$PROJECT_DIR$/bin/team22_out9.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/team22_project1.py" beforeDir="false" afterPath="$PROJECT_DIR$/bin/team22_project1.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test2 bin.txt" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -13,17 +18,21 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
+    <SUITE FILE_PATH="coverage/stumpy_legv8$Test9.coverage" NAME="Test9 Coverage Results" MODIFIED="1556589409576" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/bin" />
+    <SUITE FILE_PATH="coverage/stumpy_legv8$Test2.coverage" NAME="Test2 Coverage Results" MODIFIED="1556589376560" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/bin" />
     <SUITE FILE_PATH="coverage/stumpy_legv8$Run.coverage" NAME="Run Coverage Results" MODIFIED="1554764014075" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/bin" />
+    <SUITE FILE_PATH="coverage/stumpy_legv8$Test1.coverage" NAME="Test1 Coverage Results" MODIFIED="1556589420532" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/bin" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+    <leaf>
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/bin/team22_project1.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="345">
-              <caret line="23" column="48" lean-forward="true" selection-start-line="23" selection-start-column="48" selection-end-line="23" selection-end-column="48" />
+            <state relative-caret-position="729">
+              <caret line="442" column="46" lean-forward="true" selection-start-line="442" selection-start-column="46" selection-end-line="442" selection-end-column="46" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
+                <element signature="e#3344#3799#0" />
               </folding>
             </state>
           </provider>
@@ -34,6 +43,12 @@
   <component name="FindInProjectRecents">
     <findStrings>
       <find>[i]</find>
+      <find>replace</find>
+      <find>is</find>
+      <find>binToDecimal</find>
+      <find>numdata</find>
+      <find>mem[pc]</find>
+      <find>mem[pc</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -81,6 +96,7 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -94,17 +110,17 @@
       </list>
     </option>
   </component>
-  <component name="RunManager">
-    <configuration name="Run" type="PythonConfigurationType" factoryName="Python">
+  <component name="RunManager" selected="Python.Test1">
+    <configuration name="Test1" type="PythonConfigurationType" factoryName="Python">
       <module name="Legv8-Disassembler" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="$PROJECT_DIR$/../../ArmDisassembler/venv/bin/python" />
+      <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/bin" />
-      <option name="IS_MODULE_SDK" value="false" />
+      <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
@@ -117,6 +133,55 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="Test2" type="PythonConfigurationType" factoryName="Python">
+      <module name="Legv8-Disassembler" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/bin" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/bin/team22_project1.py" />
+      <option name="PARAMETERS" value="-i ../test2_bin.txt -o team22_out2.txt" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Test9" type="PythonConfigurationType" factoryName="Python">
+      <module name="Legv8-Disassembler" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/bin" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/bin/team22_project1.py" />
+      <option name="PARAMETERS" value="-i ../test9_bin.txt -o team22_out9.txt" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Python.Test1" />
+      <item itemvalue="Python.Test2" />
+      <item itemvalue="Python.Test9" />
+    </list>
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -136,22 +201,24 @@
       <workItem from="1553715696074" duration="1414000" />
       <workItem from="1554079690741" duration="3624000" />
       <workItem from="1554401889848" duration="3426000" />
+      <workItem from="1554903222170" duration="10617000" />
+      <workItem from="1556388914504" duration="13260000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="36894000" />
+    <option name="totallyTimeSpent" value="60771000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1680" height="952" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.16178267" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.16544567" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.22441861" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32906976" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.32906976" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -174,14 +241,26 @@
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
   </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <default-breakpoints>
+        <breakpoint type="python-exception">
+          <properties notifyOnTerminate="true" exception="BaseException">
+            <option name="notifyOnTerminate" value="true" />
+          </properties>
+        </breakpoint>
+      </default-breakpoints>
+    </breakpoint-manager>
+  </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/bin/Test.py" />
     <entry file="file://$PROJECT_DIR$/bin/team22_project1.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="345">
-          <caret line="23" column="48" lean-forward="true" selection-start-line="23" selection-start-column="48" selection-end-line="23" selection-end-column="48" />
+        <state relative-caret-position="729">
+          <caret line="442" column="46" lean-forward="true" selection-start-line="442" selection-start-column="46" selection-end-line="442" selection-end-column="46" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
+            <element signature="e#3344#3799#0" />
           </folding>
         </state>
       </provider>

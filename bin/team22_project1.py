@@ -82,9 +82,13 @@ def binToDecimalPos(s):
     return value
 
 def binToDecimalNeg(s):
+
+    s += '1'
+
     flipped = s[::-1]
     value = 0
     i = -1
+
 
     for char in flipped:
         if (char == '0'):
@@ -95,10 +99,14 @@ def binToDecimalNeg(s):
 
     return value
 
-def regToInt(str):
-    return int(re.sub('[^0-9]', '', str))
+def binToDecimal(s):
+    if (s[0] == '1'):
+        return binToDecimalNeg(s)
+    else:
+        return binToDecimalPos(s)
 
-def literalToInt(str):
+
+def parseInt(str):
     return int(re.sub('[^0-9]', '', str))
 
 class Disassembler:
@@ -187,7 +195,7 @@ class Disassembler:
 
                 arg1Str.append("\tR" + str(arg3[i]))
                 arg2Str.append(", R" + str(arg1[i]))
-                arg3Str.append(", #" + str(binToDecimalPos(instr[10:22])))
+                arg3Str.append(", #" + str(binToDecimal(instr[10:22])))
 
                 instrSpaced.append(binToSpacedI(instr))
 
@@ -200,7 +208,7 @@ class Disassembler:
 
                 arg1Str.append("\tR" + str(arg3[i]))
                 arg2Str.append(", R" + str(arg1[i]))
-                arg3Str.append(", #" + str(binToDecimalPos(instr[10:22])))
+                arg3Str.append(", #" + str(binToDecimal(instr[10:22])))
 
                 instrSpaced.append(binToSpacedI(instr))
 
@@ -278,7 +286,7 @@ class Disassembler:
 
                 arg1Str.append("\tR" + str(arg3[i]))
                 arg2Str.append(", [R" + str(arg1[i]))
-                arg3Str.append(", #" + str(binToDecimalPos(instr[12:20])) + "]")
+                arg3Str.append(", #" + str(binToDecimal(instr[12:20])) + "]")
 
                 instrSpaced.append(binToSpacedD(instr))
 
@@ -291,7 +299,7 @@ class Disassembler:
 
                 arg1Str.append("\tR" + str(arg3[i]))
                 arg2Str.append(", [R" + str(arg1[i]))
-                arg3Str.append(", #" + str(binToDecimalPos(instr[12:20])) + "]")
+                arg3Str.append(", #" + str(binToDecimal(instr[12:20])) + "]")
 
                 instrSpaced.append(binToSpacedD(instr))
 
@@ -302,7 +310,7 @@ class Disassembler:
                 arg2.append('')
                 arg3.append('')
 
-                arg1Str.append("\t#" + str(binToDecimalPos(instr[6:32])))
+                arg1Str.append("\t#" + str(binToDecimal(instr[6:32])))
                 arg2Str.append('')
                 arg3Str.append('')
 
@@ -316,7 +324,7 @@ class Disassembler:
                 arg3.append('')
 
                 arg1Str.append("\tR" + str(arg2[i]))
-                arg2Str.append(", #" + str(arg1[i]))
+                arg2Str.append(", #" + str(binToDecimal(instr[8:27])))
                 arg3Str.append('')
 
                 instrSpaced.append(binToSpacedCB(instr))
@@ -329,7 +337,7 @@ class Disassembler:
                 arg3.append('')
 
                 arg1Str.append("\tR" + str(arg2[i]))
-                arg2Str.append(", #" + str(arg1[i]))
+                arg2Str.append(", #" + str(binToDecimal(instr[8:27])))
                 arg3Str.append('')
 
                 instrSpaced.append(binToSpacedCB(instr))
@@ -380,11 +388,7 @@ class Disassembler:
                 j += 1
                 binMem.append((int(instr, base=2) >> 31 ) & 0x1)
 
-                if( binMem[j] == 1 ):
-                    opcodeStr.append("\t" + str(binToDecimalNeg(instr)))
-
-                elif( binMem[j] == 0 ):
-                    opcodeStr.append("\t" + str(binToDecimalPos(instr)))
+                opcodeStr.append("\t" + str(binToDecimal(instr)))
 
                 arg1.append('')
                 arg2.append('')
@@ -404,7 +408,7 @@ class Disassembler:
             i = 0
             for opcode in opcodeStr:
                 writeData = instrSpaced[i] + "\t" + mem[i] + ' ' + opcode + arg1Str[i] + arg2Str[i] + arg3Str[i] + '\n'
-              #  print writeData
+                print writeData
                 myFile.write(writeData)
                 i += 1
 
@@ -420,119 +424,148 @@ class Simulator(Disassembler):
         #disassemble
         Disassembler.__init__(self) #super.init
 
+        pc = 0
+        i = 0
         with open(output, 'w') as myFile:
-            for i in range(0, self.numInstr): #loop for number of instructions
-
+            while (True): #loop for number of instructions
+                i += 1
                 writeData = ''
 
                 writeData += '\n====================\n'
-                writeData += 'cycle: ' + str(mem[i])
-                writeData += '\t' + opcodeStr[i]
-                writeData += '   \t' + arg1Str[i] + '\t' + arg2Str[i].replace(',','') + '\t' + arg3Str[i].replace(',','')
+                writeData += 'cycle ' + str(i) + ': ' + str(mem[pc])
+                writeData += '\t' + opcodeStr[pc]
+                writeData += '   \t' + arg1Str[pc] + '\t' + arg2Str[pc].replace(',','') + '\t' + arg3Str[pc].replace(',','')
 
-                if (opcode[i] == 1112):  # ADD
+                if (opcode[pc] == 1112):  # ADD
 
-                    a1 = regToInt(arg1Str[i])
-                    a2 = regToInt(arg2Str[i])
-                    a3 = regToInt(arg3Str[i])
+                    a1 = parseInt(arg1Str[pc])
+                    a2 = parseInt(arg2Str[pc])
+                    a3 = parseInt(arg3Str[pc])
 
                     registers[a1] = registers[a2] + registers [a3]
 
-                elif (opcode[i] == 1624):  # SUB
+                elif (opcode[pc] == 1624):  # SUB
 
-                    a1 = regToInt(arg1Str[i])
-                    a2 = regToInt(arg2Str[i])
-                    a3 = regToInt(arg3Str[i])
+                    a1 = parseInt(arg1Str[pc])
+                    a2 = parseInt(arg2Str[pc])
+                    a3 = parseInt(arg3Str[pc])
 
                     registers[a1] = registers[a2] - registers [a3]
 
-                elif (opcode[i] >= 1160 and opcode[i] <= 1161):  # ADDI
+                elif (opcode[pc] >= 1160 and opcode[pc] <= 1161):  # ADDI
 
-                    a1 = regToInt(arg1Str[i])
-                    a2 = regToInt(arg2Str[i])
-                    a3 = literalToInt(arg3Str[i])
+                    a1 = parseInt(arg1Str[pc])
+                    a2 = parseInt(arg2Str[pc])
+                    a3 = parseInt(arg3Str[pc])
 
-                    registers[a1] = registers[a2] + a3
+                    if (not '-' in arg3Str[pc]):
+                        registers[a1] = registers[a2] + a3
+                    else:
+                        registers[a1] = registers[a2] - a3
 
-                elif (opcode[i] >= 1672 and opcode[i] <= 1673):  # SUBI
+                elif (opcode[pc] >= 1672 and opcode[pc] <= 1673):  # SUBI
 
-                    a1 = regToInt(arg1Str[i])
-                    a2 = regToInt(arg2Str[i])
-                    a3 = literalToInt(arg3Str[i])
+                    a1 = parseInt(arg1Str[pc])
+                    a2 = parseInt(arg2Str[pc])
+                    a3 = parseInt(arg3Str[pc])
 
-                    registers[a1] = registers[a2] - a3
+                    if (not '-' in arg3Str[pc]):
+                        registers[a1] = registers[a2] - a3
+                    else:
+                        registers[a1] = registers[a2] + a3
 
-                elif (opcode[i] == 1104):  # AND
+                elif (opcode[pc] == 1104):  # AND
 
-                    a1 = regToInt(arg1Str[i])
-                    a2 = regToInt(arg2Str[i])
-                    a3 = regToInt(arg3Str[i])
+                    a1 = parseInt(arg1Str[pc])
+                    a2 = parseInt(arg2Str[pc])
+                    a3 = parseInt(arg3Str[pc])
 
                     registers[a1] = a2 & a3
 
 
-                elif (opcode[i] == 1360):  # ORR
+                elif (opcode[pc] == 1360):  # ORR
 
-                    a1 = regToInt(arg1Str[i])
-                    a2 = regToInt(arg2Str[i])
-                    a3 = regToInt(arg3Str[i])
+                    a1 = parseInt(arg1Str[pc])
+                    a2 = parseInt(arg2Str[pc])
+                    a3 = parseInt(arg3Str[pc])
 
                     registers[a1] = a2 | a3
 
-                elif (opcode[i] == 1872):  # EOR
+                elif (opcode[pc] == 1872):  # EOR
 
-                    a1 = regToInt(arg1Str[i])
-                    a2 = regToInt(arg2Str[i])
-                    a3 = regToInt(arg3Str[i])
+                    a1 = parseInt(arg1Str[pc])
+                    a2 = parseInt(arg2Str[pc])
+                    a3 = parseInt(arg3Str[pc])
 
                     registers[a1] = a2 ^ a3
 
-                elif (opcode[i] == 1690):  # LSR
+                elif (opcode[pc] == 1690):  # LSR
 
-                    a1 = regToInt(arg1Str[i])
-                    a2 = regToInt(arg2Str[i])
-                    a3 = regToInt(arg3Str[i])
+                    a1 = parseInt(arg1Str[pc])
+                    a2 = parseInt(arg2Str[pc])
+                    a3 = parseInt(arg3Str[pc])
 
                     registers[a1] = a2 >> a3
 
-                elif (opcode[i] == 1691):  # LSL => 1691
+                elif (opcode[pc] == 1691):  # LSL
 
-                    a1 = regToInt(arg1Str[i])
-                    a2 = regToInt(arg2Str[i])
-                    a3 = regToInt(arg3Str[i])
+                    a1 = parseInt(arg1Str[pc])
+                    a2 = parseInt(arg2Str[pc])
+                    a3 = parseInt(arg3Str[pc])
 
                     registers[a1] = a2 << a3
 
 
-                elif (opcode[i] >= 160 and opcode[i] <= 191):  # B
+                elif (opcode[pc] >= 160 and opcode[pc] <= 191):  # B
 
-                    a1 = literalToInt(arg1Str[i])
-                    i += a1 - 1
+                    a1 = parseInt(arg1Str[pc])
+                   # print '\n' + "Arg1 = " + arg1Str[i] + ' when i = ' + str(i)
+                   # test = "i went from " + str(pc) + " to "
+                    if (not '-' in arg1Str[pc]): #positive
+                        pc += a1 - 1
+                    else:
+                        pc -= (a1 + 1)
+                   # print test + str(i)
 
-                elif (opcode[i] >= 1440 and opcode[i] <= 1447):  # CBZ
+                elif (opcode[pc] >= 1440 and opcode[pc] <= 1447):  # CBZ
 
-                    a1 = regToInt(arg1Str[i])
-                    a2 = literalToInt(arg2Str[i])
+                    a1 = parseInt(arg1Str[pc])
+                    a2 = parseInt(arg2Str[pc])
 
                     if (a1 == 0):
-                        i += a2 - 1
+                        if (not '-' in arg2Str[pc]):  # positive
+                            pc += a2 - 1
+                        else:
+                            pc -= (a2 + 1)
 
-                elif (opcode[i] >= 1448 and opcode[i] <= 1455):  # CBNZ
+                elif (opcode[pc] >= 1448 and opcode[pc] <= 1455):  # CBNZ
 
-                    a1 = regToInt(arg1Str[i])
-                    a2 = literalToInt(arg2Str[i])
+                    a1 = parseInt(arg1Str[pc])
+                    a2 = parseInt(arg2Str[pc])
 
                     if (a1 != 0):
-                        i += a2 - 1
+                        if (not '-' in arg2Str[pc]):  # positive
+                            pc += a2 - 1
+                        else:
+                            pc -= (a2 + 1)
 
-                elif (opcode[i] >= 1684 and opcode[i] <= 1687): #MOVZ
-                    pass
+                elif (opcode[pc] >= 1684 and opcode[pc] <= 1687): #MOVZ
 
-                elif (opcode[i] >= 1940 and opcode[i] <= 1943): #MOVK
-                    pass
+                    a1 = parseInt(arg1Str[pc]) #register
+                    a2 = parseInt(arg2Str[pc]) #value
+                    a3 = parseInt(arg3Str[pc]) #shift amount
 
-                elif (opcode[i] == 2038):  # BREAK
-                    pass
+                    registers[a1] = a2 << a3
+
+                elif (opcode[pc] >= 1940 and opcode[pc] <= 1943): #MOVK
+                    a1 = parseInt(arg1Str[pc])  # register
+                    a2 = parseInt(arg2Str[pc])  # value
+                    a3 = parseInt(arg3Str[pc])  # shift amount
+
+                    registers[a1] = registers[a1] | (a2 << a3)
+
+                elif (opcode[pc] == 2038):  # BREAK
+                    return
 
 
                 #print registers (4x8)
@@ -557,7 +590,10 @@ class Simulator(Disassembler):
                 print writeData
                 myFile.write(writeData)
 
+                pc += 1
+
 
 if __name__ == "__main__":
+    #sim = Disassembler()
     sim = Simulator()
 
