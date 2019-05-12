@@ -9,14 +9,13 @@ arg3 = []  # <type 'list'>: [0, 10, 264, 0, 264, 48, 2, 172, 216, 260, 8, 6, 0, 
 arg1Str = []  # <type 'list'>: ['', '\tR1', '\tR1', '', '\tR1', '\tR1', '\tR10', '\tR3', '\tR4', .....]
 arg2Str = []  # <type 'list'>: ['', ', R0', ', 264', '', ', 264', ', #48', ', R1', ', 172', ', 216', ...]'
 arg3Str = []  # <type 'list'>: ['', ', #10', '(R0)', '', '(R0)', '', ', #2', '(R10)', '(R10)', '(R0)',...]
-addresses = []  # <type 'list'>: [-1, -2, -3, 1, 2, 3, 0, 0, 5, -5, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0]
+mem = []  # <type 'list'>: [-1, -2, -3, 1, 2, 3, 0, 0, 5, -5, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0]
 binMem = []  # <type 'list'>: ['11111111111111111111111111111111', '11111111111111111111111111111110', ...] opcode = []
 opcode = []
 opcodeStr = []
 instructions = []
 instrSpaced = []
 registers = []
-memory = []
 numInstr = 0
 numData = 0
 
@@ -110,15 +109,6 @@ def binToDecimal(s):
 def parseInt(str):
     return int(re.sub('[^0-9]', '', str))
 
-def baseEight(x):
-
-    base = 8
-
-    if (x % 8 == 0):
-        return x
-    else:
-        return baseEight(x + 1)
-
 
 # project 1
 class Disassembler:
@@ -132,7 +122,7 @@ class Disassembler:
     global arg1Str
     global arg2Str
     global arg3Str
-    global addresses
+    global mem
     global binMem
     global opcode
     global numInstr
@@ -145,7 +135,7 @@ class Disassembler:
 
 # gets the arguments and read in input -> stores input in instructions
     def setup(self):
-        global  output
+        global output
         global input
         # get file names
         for i in range(len(sys.argv)):
@@ -153,7 +143,6 @@ class Disassembler:
                 input = sys.argv[i + 1]
             if (sys.argv[i] == '-o' and i < (len(sys.argv) - 1)):
                 output = sys.argv[i + 1]
-
 
         # open file for reading
         with open(input, 'r') as fin:
@@ -169,7 +158,7 @@ class Disassembler:
 
             i += 1
 
-            addresses.append(str(96 + (i * 4))) # memory location
+            mem.append(str(96 + (i * 4))) # memory location
             opcode.append(int(instr, base=2) >> 21)
 
             if( opcode[i] == 1112 ):  # if opcode = 1112 -> ADD
@@ -292,9 +281,9 @@ class Disassembler:
             elif( opcode[i] == 1984 ): # STUR => 1984
                 opcodeStr.append("\tSTUR") # D TYPE INSTRUCTION
 
-                arg1.append((int(instr, base=2) & rnMask) >> 5)  # R2 (store location)
+                arg1.append((int(instr, base=2) & rnMask) >> 5)  # R2
                 arg2.append((int(instr, base=2) & rmMask) >> 12)  # address
-                arg3.append((int(instr, base=2) & rdMask) >> 0)  # R1 (original location)
+                arg3.append((int(instr, base=2) & rdMask) >> 0)  # R1
 
                 arg1Str.append("\tR" + str(arg3[i]))
                 arg2Str.append(", [R" + str(arg1[i]))
@@ -305,9 +294,9 @@ class Disassembler:
             elif( opcode[i] == 1986 ): # LDUR => 1986
                 opcodeStr.append("\tLDUR") # D TYPE INSTRUCTION
 
-                arg1.append((int(instr, base=2) & rnMask) >> 5)  # R2 (load location)
+                arg1.append((int(instr, base=2) & rnMask) >> 5)  # R2
                 arg2.append((int(instr, base=2) & rmMask) >> 16)  # address
-                arg3.append((int(instr, base=2) & rdMask) >> 0)  # R1 (save location)
+                arg3.append((int(instr, base=2) & rdMask) >> 0)  # R1
 
                 arg1Str.append("\tR" + str(arg3[i]))
                 arg2Str.append(", [R" + str(arg1[i]))
@@ -396,14 +385,11 @@ class Disassembler:
 
                 instrSpaced.append(binToSpacedBreak(instr))
 
-            elif (broken): #hit a break
+            elif (broken):
                 j += 1
                 binMem.append((int(instr, base=2) >> 31 ) & 0x1)
 
                 opcodeStr.append("\t" + str(binToDecimal(instr)))
-                ptr = int(addresses[i])
-                memory[ptr] = int(binToDecimal(instr))
-                print '\nmem[' + str(ptr) + '] = ' + str(memory[ptr])
 
                 arg1.append('')
                 arg2.append('')
@@ -422,8 +408,8 @@ class Disassembler:
         with open(output, 'w') as myFile:
             i = 0
             for opcode in opcodeStr:
-                writeData = instrSpaced[i] + "\t" + addresses[i] + ' ' + opcode + arg1Str[i] + arg2Str[i] + arg3Str[i] + '\n'
-                print writeData
+                writeData = instrSpaced[i] + "\t" + mem[i] + ' ' + opcode + arg1Str[i] + arg2Str[i] + arg3Str[i] + '\n'
+                # print writeData
                 myFile.write(writeData)
                 i += 1
 
@@ -452,7 +438,7 @@ class Simulator(Disassembler):
                 writeData = ''
 
                 writeData += '\n====================\n'
-                writeData += 'cycle ' + str(i) + ': ' + str(addresses[pc])
+                writeData += 'cycle ' + str(i) + ': ' + str(mem[pc])
                 writeData += '\t' + opcodeStr[pc]
                 writeData += '   \t' + arg1Str[pc] + '\t' + arg2Str[pc].replace(',','') + '\t' + arg3Str[pc].replace(',','')
 
@@ -595,32 +581,11 @@ class Simulator(Disassembler):
 
                     registers[a1] = registers[a1] | (a2 << a3)
 
-# does this actually work?????????????????????????????????????????????????????????????????????????
                 elif (opcode[pc] == 1984): # STUR
 
-                    a1 = parseInt(arg1Str[pc])  # value
-                    a2 = parseInt(arg2Str[pc])  # Address
-                    a3 = parseInt(arg3Str[pc])  # Word Offset
-
-                    for i in range(0, baseEight(a3)):
-
-                        ptr = int(addresses[a2]) + i * 4
-                        self.numData += 1
-                        addresses.append(str(int(addresses[addresses.__len__() - 1]) + 4))
-
-                        print i
-                        print a3
-
-                        if (i == a3 - 1):
-                            memory[ptr] = registers[a1]
-                        else:
-                            memory[ptr] = 0
-
-
-<<<<<<< HEAD
-                    a2 = parseInt(opcodeStr[a2]) + a3 # calculate address using offset value
-                    temp = registers[a1] # store the item of into a temp
-                    opcodeStr[a2] = temp # store temp into the address
+                    a1 = parseInt(arg1Str[pc])  # register1
+                    a2 = parseInt(arg2Str[pc])  # register2
+                    a3 = parseInt(arg3Str[pc])  # value
 
             #### My way of trying to mimic allocating memory like what happens when data fills with 0s after he stores 200 in mem[360] for the example output ###
                 #Does NOT work
@@ -631,30 +596,17 @@ class Simulator(Disassembler):
              #       for i in range(0, registers[registers[a2] + a3 - last]):
              #           mem.append(last + i    `* 4)
 
-=======
->>>>>>> 420f0f2892f3458c3d093a9a3c06d3e6b0aaf59a
 
-
-# does this actually work?????????????????????????????????????????????????????????????????????????
                 elif (opcode[pc] == 1986): # LDUR
 
-                    a1 = parseInt(arg1Str[pc])  # target register
-                    a2 = parseInt(arg2Str[pc])  # pointer register
-                    a3 = parseInt(arg3Str[pc])  # Word Offset
-
-                    ptr = int(addresses[a2]) + i * 4
-                    registers[a1] = memory[ptr]
-
-
-
-                    a2 = parseInt(opcodeStr[a2]) + a3 # calculate address use offset value
-                    temp = parseInt(opcodeStr[a2]) # load item from address into temp
-                    registers[a1] = temp # load item (in temp) to designated register
+                    a1 = parseInt(arg1Str[pc])  # register1
+                    a2 = parseInt(arg2Str[pc])  # register2
+                    a3 = parseInt(arg3Str[pc])  # value
 
                 elif (opcode[pc] == 2038):  # BREAK
                     return
 
-                # print registers (4x8)
+                #print registers (4x8)
                 writeData += '\n\nRegisters:'
                 index = 0
                 for x in range(0, 4):
@@ -665,25 +617,447 @@ class Simulator(Disassembler):
                         writeData += '\t' + str(registers[index])
                         index += 1
 
-                # print data
+                print data
                 writeData += '\n\nData:'
-                for x in range(0, self.numData - 1):
-                    ptr = int(addresses[self.numInstr + x]) + 8
+                for x in range(0, self.numData):
                     if (x % 8 == 0):
-                        writeData += '\n' + str(ptr) + ":" #new line
-                    writeData += '\t' + str(memory[ptr])
+                        writeData += '\n' + str(mem[self.numInstr + x]) + ":" #new line
+                    writeData += opcodeStr[self.numInstr + x]
 
                 print writeData
                 myFile.write(writeData)
 
                 pc += 1
 
+# project 3
+class Simulator(Caching):
+
+    global registers
+
+    global opcodeStr
+    global arg1
+    global arg2
+    global arg3
+    global arg1Str
+    global arg2Str
+    global arg3Str
+    global mem
+    global binMem
+    global opcode
+    global numInstr
+    global numData
+
+    global cycles
+    global preIB # for pre-Issue Buffer
+    global preALU # for pre_ALU Queue
+    global postALU
+    global preMEM
+    global postMEM
+
+    cycles = 0
+    preIB = 0
+    preALU = 0
+    postALU = 0
+    preMEM = 0
+    postMEM = 0
+
+    registers = [0 for i in xrange(32)]
+
+    def __init__(self): # override init
+
+        # caching
+        Caching.__init__(self) # super.init
+
+        # call the method from Disassembler class to prevent copy and pasting of code
+
+
+    def setup(self):
+        global output
+        global input
+        # get file names
+        for i in range(len(sys.argv)):
+            if (sys.argv[i] == '-i' and i < (len(sys.argv) - 1)):
+                input = sys.argv[i + 1]
+            if (sys.argv[i] == '-o' and i < (len(sys.argv) - 1)):
+                output = sys.argv[i + 1]
+
+        # open file for reading
+        with open(input, 'r') as fin:
+            for line in fin:
+                instructions.append(line)
+
+    def disassemble(self):
+        i = -1
+        j = -1
+        broken = True
+
+        for instr in instructions:
+
+            i += 1
+
+            mem.append(str(96 + (i * 4))) # memory location
+            opcode.append(int(instr, base=2) >> 21)
+
+            if( opcode[i] == 1112 ):  # if opcode = 1112 -> ADD
+                opcodeStr.append("\tADD")        # R Format
+
+                arg1.append((int(instr, base=2) & rnMask) >> 5)
+                arg2.append((int(instr, base=2) & rmMask) >> 16)
+                arg3.append((int(instr, base=2) & rdMask) >> 0)
+
+                arg1Str.append("\tR" + str(arg3[i]))
+                arg2Str.append(", R" + str(arg1[i]))
+                arg3Str.append(", R" + str(arg2[i]))
+
+                instrSpaced.append(binToSpacedR(instr))
+
+            elif( opcode[i] == 1624 ):           # SUB = 1624
+                opcodeStr.append("\tSUB")        # R Format
+
+                arg1.append((int(instr, base=2) & rnMask) >> 5)
+                arg2.append((int(instr, base=2) & rmMask) >> 16)
+                arg3.append((int(instr, base=2) & rdMask) >> 0)
+
+                arg1Str.append("\tR" + str(arg3[i]))
+                arg2Str.append(", R" + str(arg1[i]))
+                arg3Str.append(", R" + str(arg2[i]))
+
+                instrSpaced.append(binToSpacedR(instr))
+
+            elif( opcode[i] >= 1160 and opcode[i] <= 1161 ):   # ADDI => 1160 - 1161
+                opcodeStr.append("\tADDI")                     # I Format
+
+                arg1.append((int(instr, base=2) & rnMask) >> 5)
+                arg2.append((int(instr, base=2) & imMask) >> 10)
+                arg3.append((int(instr, base=2) & rdMask) >> 0)
+
+                arg1Str.append("\tR" + str(arg3[i]))
+                arg2Str.append(", R" + str(arg1[i]))
+                arg3Str.append(", #" + str(binToDecimal(instr[10:22])))
+
+                instrSpaced.append(binToSpacedI(instr))
+
+            elif( opcode[i] >= 1672 and opcode[i] <= 1673 ): # SUBI => 1672 - 1673
+                opcodeStr.append("\tSUBI")                     # I Format
+
+                arg1.append((int(instr, base=2) & rnMask) >> 5)
+                arg2.append((int(instr, base=2) & imMask) >> 10)
+                arg3.append((int(instr, base=2) & rdMask) >> 0)
+
+                arg1Str.append("\tR" + str(arg3[i]))
+                arg2Str.append(", R" + str(arg1[i]))
+                arg3Str.append(", #" + str(binToDecimal(instr[10:22])))
+
+                instrSpaced.append(binToSpacedI(instr))
+
+            elif( opcode[i] == 1104 ): # AND => 1104
+                opcodeStr.append("\tAND")  # R Format
+
+                arg1.append((int(instr, base=2) & rnMask) >> 5)
+                arg2.append((int(instr, base=2) & rmMask) >> 16)
+                arg3.append((int(instr, base=2) & rdMask) >> 0)
+
+                arg1Str.append("\tR" + str(arg3[i]))
+                arg2Str.append(", R" + str(arg1[i]))
+                arg3Str.append(", R" + str(arg2[i]))
+
+                instrSpaced.append(binToSpacedR(instr))
+
+            elif( opcode[i] == 1360 ): # ORR => 1360
+                opcodeStr.append("\tORR")  # R Format
+
+                arg1.append((int(instr, base=2) & rnMask) >> 5)
+                arg2.append((int(instr, base=2) & rmMask) >> 16)
+                arg3.append((int(instr, base=2) & rdMask) >> 0)
+
+                arg1Str.append("\tR" + str(arg3[i]))
+                arg2Str.append(", R" + str(arg1[i]))
+                arg3Str.append(", R" + str(arg2[i]))
+
+                instrSpaced.append(binToSpacedR(instr))
+
+            elif( opcode[i] == 1872 ): # EOR => 1872
+                opcodeStr.append("\tEOR")  # R TYPE INSTRUCTION
+
+                arg1.append((int(instr, base=2) & rnMask) >> 5)
+                arg2.append((int(instr, base=2) & rmMask) >> 16)
+                arg3.append((int(instr, base=2) & rdMask) >> 0)
+
+                arg1Str.append("\tR" + str(arg3[i]))
+                arg2Str.append(", R" + str(arg1[i]))
+                arg3Str.append(", R" + str(arg2[i]))
+
+                instrSpaced.append(binToSpacedR(instr))
+
+            elif( opcode[i] == 1690 ): # LSR => 1690
+                opcodeStr.append("\tLSR")  # R TYPE INSTRUCTION
+
+                arg1.append((int(instr, base=2) & rnMask) >> 5)  # arg1 is R1
+                arg2.append((int(instr, base=2) & shmtMask) >> 10)  # arg2 is shamt
+                arg3.append((int(instr, base=2) & rdMask) >> 0)  # arg3 is R0
+
+                arg1Str.append("\tR" + str(arg3[i]))
+                arg2Str.append(", R" + str(arg1[i]))
+                arg3Str.append(", #" + str(arg2[i]))
+
+                instrSpaced.append(binToSpacedR(instr))
+
+            elif( opcode[i] == 1691 ): # LSL => 1691
+                opcodeStr.append("\tLSL")  # R TYPE INSTRUCTION
+
+                arg1.append((int(instr, base=2) & rnMask) >> 5)  # arg1 is R1
+                arg2.append((int(instr, base=2) & shmtMask) >> 10)  # arg2 is shamt
+                arg3.append((int(instr, base=2) & rdMask) >> 0)  # arg3 is R0
+
+                arg1Str.append("\tR" + str(arg3[i]))
+                arg2Str.append(", R" + str(arg1[i]))
+                arg3Str.append(", #" + str(arg2[i]))
+
+                instrSpaced.append(binToSpacedR(instr))
+
+            elif( opcode[i] == 1984 ): # STUR => 1984
+                opcodeStr.append("\tSTUR") # D TYPE INSTRUCTION
+
+                arg1.append((int(instr, base=2) & rnMask) >> 5)  # R2
+                arg2.append((int(instr, base=2) & rmMask) >> 12)  # address
+                arg3.append((int(instr, base=2) & rdMask) >> 0)  # R1
+
+                arg1Str.append("\tR" + str(arg3[i]))
+                arg2Str.append(", [R" + str(arg1[i]))
+                arg3Str.append(", #" + str(binToDecimal(instr[12:20])) + "]")
+
+                instrSpaced.append(binToSpacedD(instr))
+
+            elif( opcode[i] == 1986 ): # LDUR => 1986
+                opcodeStr.append("\tLDUR") # D TYPE INSTRUCTION
+
+                arg1.append((int(instr, base=2) & rnMask) >> 5)  # R2
+                arg2.append((int(instr, base=2) & rmMask) >> 16)  # address
+                arg3.append((int(instr, base=2) & rdMask) >> 0)  # R1
+
+                arg1Str.append("\tR" + str(arg3[i]))
+                arg2Str.append(", [R" + str(arg1[i]))
+                arg3Str.append(", #" + str(binToDecimal(instr[12:20])) + "]")
+
+                instrSpaced.append(binToSpacedD(instr))
+
+            elif( opcode[i] >= 160 and opcode[i] <= 191 ):  # B => 160 - 191
+                opcodeStr.append("\tB") # B TYPE INSTRUCTION
+
+                arg1.append('')
+                arg2.append('')
+                arg3.append('')
+
+                arg1Str.append("\t#" + str(binToDecimal(instr[6:32])))
+                arg2Str.append('')
+                arg3Str.append('')
+
+                instrSpaced.append(binToSpacedB(instr))
+
+            elif( opcode[i] >= 1440 and opcode[i] <= 1447 ):  # CBZ => 1440 - 1447
+                opcodeStr.append("\tCBZ") # CB TYPE INSTRUCTION
+
+                arg1.append((int(instr, base=2) & addr2Mask) >> 5)
+                arg2.append((int(instr, base=2) & rdMask) >> 0)
+                arg3.append('')
+
+                arg1Str.append("\tR" + str(arg2[i]))
+                arg2Str.append(", #" + str(binToDecimal(instr[8:27])))
+                arg3Str.append('')
+
+                instrSpaced.append(binToSpacedCB(instr))
+
+            elif( opcode[i] >= 1448 and opcode[i] <= 1455 ):  # CBNZ => 1448 - 1455
+                opcodeStr.append("\tCBNZ") # CB TYPE INSTRUCTION
+
+                arg1.append((int(instr, base=2) & addr2Mask) >> 5)
+                arg2.append((int(instr, base=2) & rdMask) >> 0)
+                arg3.append('')
+
+                arg1Str.append("\tR" + str(arg2[i]))
+                arg2Str.append(", #" + str(binToDecimal(instr[8:27])))
+                arg3Str.append('')
+
+                instrSpaced.append(binToSpacedCB(instr))
+
+            elif( opcode[i] >= 1684 and opcode[i] <= 1687 ):
+                opcodeStr.append("\tMOVZ") # IM TYPE INSTRUCTION
+
+                arg1.append((int(instr, base=2) & imdataMask) >> 5)
+                arg2.append(16*((int(instr, base=2) & imsftMask) >> 21))
+                arg3.append((int(instr, base=2) & rdMask) >> 0)
+
+                arg1Str.append("\tR" + str(arg3[i]))
+                arg2Str.append(", " + str(arg1[i]))
+                arg3Str.append(", LSL " + str(arg2[i]))
+
+                instrSpaced.append(binToSpacedIM(instr))
+
+            elif( opcode[i] >= 1940 and opcode[i] <= 1943 ):
+                opcodeStr.append("\tMOVK") # IM TYPE INSTRUCTION
+
+                arg1.append((int(instr, base=2) & imdataMask) >> 5)
+                arg2.append(16*((int(instr, base=2) & imsftMask) >> 21))
+                arg3.append((int(instr, base=2) & rdMask) >> 0)
+
+                arg1Str.append("\tR" + str(arg3[i]))
+                arg2Str.append(", " + str(arg1[i]))
+                arg3Str.append(", LSL " + str(arg2[i]))
+
+                instrSpaced.append(binToSpacedIM(instr))
+
+            elif( opcode[i] == 2038 ): # BREAK => 2038
+
+                self.numInstr = i
+
+                opcodeStr.append("\tBREAK")
+
+                arg1.append('')
+                arg2.append('')
+                arg3.append('')
+
+                arg1Str.append('')
+                arg2Str.append('')
+                arg3Str.append('')
+
+                instrSpaced.append(binToSpacedBreak(instr))
+
+            elif (broken):
+                j += 1
+                binMem.append((int(instr, base=2) >> 31 ) & 0x1)
+
+                opcodeStr.append("\t" + str(binToDecimal(instr)))
+
+                arg1.append('')
+                arg2.append('')
+                arg3.append('')
+
+                arg1Str.append('')
+                arg2Str.append('')
+                arg3Str.append('')
+
+                instrSpaced.append(binToSpacedInt(instr))
+
+        self.numInstr = i - j
+        self.numData = j
+
+    def preIssue_Buffer(self):
+
+        writeData += 'Pre-Issue Buffer:\n'
+
+        for index in range (0, 4):
+            writeData += '\tEntry ' + index + ':\t'
+            if index < 2 and cycles > 1:
+                writeData += '[' + opcode + ' ' + arg1Str[preIB] + ' ' + arg2Str[preIB] +  ' '+ arg3Str[preIB] + ']'
+                preIB += 1
+
+    def preALU_Queue(self):
+        writeData += 'Pre_ALU Queue: \n'
+
+        for index in range (0, 2):
+            writeData += '\tEntry' + index + ':\t'
+            if index < 1 and preIB > 0:
+                writeData += '[' + opcode + ' ' + arg1Str[preALU] + ' ' + arg2Str[preALU] +  ' '+ arg3Str[preALU] + ']'
+                preALU += 1
+
+    def postALU_Queue(self):
+        writeData += 'Post_ALU Queue\n'
+        writeData += '\t Entry 0:\t'
+        if preALU > 1:
+            writeData += '[' + opcode + ' ' + arg1Str[postALU] + ' ' + arg2Str[postALU] +  ' '+ arg3Str[postALU] + ']'
+
+            # this is where the storing into the register comes into play
+
+    def preMEM_Queue(self):
+        derp = 'I have less brain cells than ethiopia has food'
+
+    def postMEM_Queue(self):
+        quit = 'what am I doing with my life'
+
+    def Registers(self):
+        dick = 'I might as well suck one'
+
+    # once cycle two starts, loading something into the set 0 (do not know how the fuck to do that)
+    def Cache(self):
+        meh = 'my attitude to life'
+
+    def Data(self):
+        ded = 'holy fucking shit kill me now'
+
+
+    def output(self):
+        with open(output, 'w') as myFile:
+            while (True):
+                i += 1
+
+                writeData += ''
+
+                writeData += '\n--------------------\n'
+                writeData += 'Cycle ' + str(i) + '\n\n'
+
+                writeData += 'Pre-Issue Buffer: \n'
+                # pre-issue buffer stuff
+                for preIssBuff in range (0, 4):
+                    if (i == 1):
+                        writeData += 'Entry' + preIssBuff + ':\t'
+                    else:
+                        writeData += 'Entry' + preIssBuff + ':\t[' +  instrSpaced[i] + "\t" + mem[i] + ' ' + opcode + arg1Str[i] + arg2Str[i] + arg3Str[i] + '\n'
+
+                writeData += 'Pre_ALU Queue: \n'
+
+                for preALUq in range (0, 2):
+                    stoopid = 0
+
+                writeData += 'Post_ALU Queue \n'
+
+                writeData += 'Pe_MEM Queue \n'
+
+                writeData += 'Post_MEM Queue \n'
+
+'''
+in case if this is needed. probably not tho
+
+if (opcode[i] == 0): # NO OP
+
+elif (opcode[i] == 1112): # ADD
+
+elif (opcode[i] == 1624): # SUB
+
+elif (opcode[i] >= 1160 and opcode[i] <= 1161): # ADDI
+
+elif (opcode[i] >= 1672 and opcode[i] <= 1673): # SUBI
+
+elif (opcode[i] == 1104): # AND
+
+elif (opcode[i] == 1360): # ORR
+
+elif (opcode[i] == 1872): # EOR
+
+elif (opcode[i] == 1690): # LSR
+
+elif (opcode[i] == 1691): # LSL
+
+elif (opcode[i] >= 160 and opcode[i] <= 191): # B
+
+elif (opcode[i] >= 1440 and opcode[i] <= 1447): # CBZ
+
+elif (opcode[i] >= 1448 and opcode[i] <= 1455): # CBNZ
+
+elif (opcode[i] >= 1684 and opcode[i] <= 1687): # MOVZ
+
+elif (opcode[i] >= 1940 and opcode[i] <= 1943): # MOVK
+
+elif (opcode[i] == 1984): # STUR
+
+elif (opcode[i] == 1986): # LDUR
+
+elif (opcode[i] == 2038): # BREAK
+'''
+
+
+
 
 if __name__ == "__main__":
     #sim = Disassembler()
-    memory = [0 for i in xrange(1000)]
     sim = Simulator()
-   # for i in mem:
-    #    print i
-
 
